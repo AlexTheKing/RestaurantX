@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">RestaurantX</string>
+    <string name="dish_photo_description">Dish photo</string>
+    <string name="ingredients">Ingredients:</string>
+    <string name="average">Av:</string>
 </resources>

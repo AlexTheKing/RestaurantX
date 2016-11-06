@@ -4,14 +4,15 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.LruCache;
 import android.widget.ImageView;
 
+import com.example.alex.restaurantx.callbacks.IResultCallback;
 import com.example.alex.restaurantx.network.HttpClient;
 import com.example.alex.restaurantx.network.Request;
 import com.example.alex.restaurantx.threads.IProgressCallback;
-import com.example.alex.restaurantx.threads.IResultCallback;
 import com.example.alex.restaurantx.threads.ITask;
 import com.example.alex.restaurantx.threads.PriorityRunnable;
 import com.example.alex.restaurantx.threads.ThreadManager;
@@ -28,7 +29,7 @@ public class ImageLoader {
     private ThreadManager mThreadManagerInstance;
     private volatile LruCache<String, Bitmap> mLruCache;
     private volatile Stack<PriorityModel> mDownloadPriorities;
-    private int defaultCacheSize = 64 * 1000 * 1000;
+    private int defaultCacheSize = 12 * 1024 * 1024;
     private final Object mLockObj = new Object();
     private String TAG = "IMAGELOADER";
 
@@ -60,11 +61,11 @@ public class ImageLoader {
         return sLoader;
     }
 
-    public void downloadAndDraw(final String pUrl, final ImageView pView) {
+    public void downloadAndDraw(final String pUrl, final ImageView pView, @Nullable final IBitmapDownloadedCallback pCallback) {
         if (findModel(pUrl) != -1) {
             risePriority(pUrl);
             recalculatePriorities();
-            Log.d(TAG, "downloadAndDraw: UP PRIORITY " + pUrl);
+            Log.d(TAG, "downloadAndDraw: UP PRIORITY FOR " + pUrl);
             return;
         }
         pView.setTag(pUrl);
@@ -72,10 +73,13 @@ public class ImageLoader {
         synchronized (mLockObj) {
             cachedBitmap = mLruCache.get(pUrl);
         }
-        Log.d(TAG, "downloadAndDraw: CACHED: " + (cachedBitmap == null ? "NULL" : "NOT NULL") + " " + pUrl);
+        Log.d(TAG, "downloadAndDraw: CACHED: " + (cachedBitmap == null ? "NO" : "YES") + " " + pUrl);
         if (cachedBitmap != null && pView.getTag() == pUrl) {
             Log.d(TAG, "downloadAndDraw: FROM LRU CACHE " + pUrl);
             pView.setImageBitmap(cachedBitmap);
+            if (pCallback != null) {
+                pCallback.onDownload(cachedBitmap);
+            }
             return;
         }
         Handler handler = new Handler(Looper.getMainLooper());
@@ -129,6 +133,9 @@ public class ImageLoader {
                     }
                     if (pView.getTag() == pUrl) {
                         pView.setImageBitmap(pBitmap);
+                        if (pCallback != null) {
+                            pCallback.onDownload(pBitmap);
+                        }
                     }
                 }
                 cleanStack();
@@ -169,11 +176,11 @@ public class ImageLoader {
 
     private synchronized void recalculatePriorities() {
         for (PriorityModel priorityModel : mDownloadPriorities) {
-            if (mDownloadPriorities.indexOf(priorityModel) == 0) {
-                priorityModel.setPriority(Thread.MIN_PRIORITY);
-                continue;
+            int priority = Math.round((float) mDownloadPriorities.indexOf(priorityModel) * 10 / mDownloadPriorities.size());
+            if (priority == 0) {
+                priority = Thread.MIN_PRIORITY;
             }
-            priorityModel.setPriority(mDownloadPriorities.indexOf(priorityModel) / mDownloadPriorities.size() * Thread.MAX_PRIORITY);
+            priorityModel.setPriority(priority);
         }
     }
 }

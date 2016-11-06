@@ -2,6 +2,8 @@ package com.example.alex.restaurantx.threads;
 
 import android.os.Handler;
 
+import com.example.alex.restaurantx.callbacks.IResultCallback;
+
 public class PriorityRunnable<Params, Progress, Result> implements Runnable, Comparable<PriorityRunnable> {
 
     private ITask<Params, Progress, Result> mTask;
@@ -61,7 +63,9 @@ public class PriorityRunnable<Params, Progress, Result> implements Runnable, Com
     @Override
     public int compareTo(PriorityRunnable pRunnable) {
         int otherRunnablePriority = pRunnable.getPriority();
-        if (mPriority < otherRunnablePriority) {
+        //Because PriorityBlockingQueue places less objects to the up of the queue
+        //So they are executed earlier
+        if (mPriority > otherRunnablePriority) {
             return -1;
         } else if (mPriority == otherRunnablePriority) {
             return 0;

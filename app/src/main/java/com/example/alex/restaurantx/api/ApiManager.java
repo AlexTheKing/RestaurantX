@@ -1,7 +1,7 @@
 package com.example.alex.restaurantx.api;
 
+import com.example.alex.restaurantx.callbacks.IResultCallback;
 import com.example.alex.restaurantx.network.HttpClient;
-import com.example.alex.restaurantx.network.IResultCallback;
 import com.example.alex.restaurantx.network.Request;
 
 public class ApiManager {
@@ -26,8 +26,13 @@ public class ApiManager {
         final String[] response = new String[1];
         client.makeAsyncRequest(new Request.Builder().setMethod("GET").setUrl(pBaseUrl + mPartUrl + pMethodUrl).build(), new IResultCallback<String>() {
             @Override
-            public void processResults(String pResponse) {
-                pCallback.processResults(pResponse);
+            public void onSuccess(String pResponse) {
+                pCallback.onSuccess(pResponse);
+            }
+
+            @Override
+            public void onError(Exception e) {
+
             }
         });
     }

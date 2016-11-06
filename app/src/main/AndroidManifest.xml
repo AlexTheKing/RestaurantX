@@ -19,6 +19,9 @@
         <activity
             android:name=".TestImageLoader"
             android:exported="true"/>
+        <activity
+            android:name=".DishInfoActivity"
+            android:exported="true"/>
     </application>
 
 </manifest>

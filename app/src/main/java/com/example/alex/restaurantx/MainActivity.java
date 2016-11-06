@@ -9,8 +9,9 @@ import android.widget.Toast;
 import com.example.alex.restaurantx.adapter.DataAdapter;
 import com.example.alex.restaurantx.api.ApiManager;
 import com.example.alex.restaurantx.callbacks.IClickCallback;
+import com.example.alex.restaurantx.callbacks.IResultCallback;
+import com.example.alex.restaurantx.holder.ContextHolder;
 import com.example.alex.restaurantx.json.JsonHandler;
-import com.example.alex.restaurantx.network.IResultCallback;
 
 import org.json.JSONException;
 
@@ -114,10 +115,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //TODO PLACE CONTEXTHOLDER IN PROPER PLACE
+        ContextHolder.getInstance().setContext(getApplicationContext());
         new ApiManager().getTypesMethod(mBaseUrl, new IResultCallback<String>() {
+
             @Override
-            public void processResults(String pResponse) {
+            public void onSuccess(String pResponse) {
                 MainActivity.this.setUpTypesInRecyclerView(pResponse);
+            }
+
+            @Override
+            public void onError(Exception e) {
+
             }
         });
     }

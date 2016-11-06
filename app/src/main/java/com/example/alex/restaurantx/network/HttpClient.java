@@ -3,6 +3,8 @@ package com.example.alex.restaurantx.network;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.example.alex.restaurantx.callbacks.IResultCallback;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -100,7 +102,7 @@ public class HttpClient {
 
             @Override
             protected void onPostExecute(String pResult) {
-                pCallback.processResults(pResult);
+                pCallback.onSuccess(pResult);
                 super.onPostExecute(pResult);
             }
         }.execute(pRequest);

@@ -1,4 +1,4 @@
-package com.example.alex.restaurantx.threads;
+package com.example.alex.restaurantx.callbacks;
 
 public interface IResultCallback<Result> {
 

@@ -28,7 +28,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.DataHolder> 
 
     @Override
     public void onBindViewHolder(DataHolder pHolder, final int pPosition) {
-        ImageLoader.getInstance().downloadAndDraw(mData[pPosition], pHolder.mImageView);
+        ImageLoader.getInstance().downloadAndDraw(mData[pPosition], pHolder.mImageView, null);
         pHolder.mImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View pView) {
