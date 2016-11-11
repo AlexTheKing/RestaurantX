@@ -3,9 +3,11 @@ package com.example.alex.restaurantx.model;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import com.example.alex.restaurantx.callbacks.IResultCallback;
 import com.example.alex.restaurantx.database.DatabaseHelper;
 import com.example.alex.restaurantx.database.models.IngredientIndexModel;
 import com.example.alex.restaurantx.holder.ContextHolder;
+import com.example.alex.restaurantx.systems.DataManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,32 +18,28 @@ public class IngredientIndex {
     private HashMap<String, Integer> mIndexes;
 
     public IngredientIndex() {
-        mIndexes = new HashMap<>();
         loadCachedIndexing();
     }
 
     private void loadCachedIndexing() {
-        //TODO CHECK LOADING INDEXES FROM DB
-        DatabaseHelper helper = DatabaseHelper.getInstance(ContextHolder.getInstance().getContext(), DatabaseHelper.CURRENT_VERSION);
-        Cursor cursor = null;
-        try {
-            cursor = helper.query("*", IngredientIndexModel.class, "");
-            int indexIngredientColumn = cursor.getColumnIndex(IngredientIndexModel.INGREDIENT);
-            int indexWeightColumn = cursor.getColumnIndex(IngredientIndexModel.WEIGHT);
-            while (cursor.moveToNext()) {
-                mIndexes.put(cursor.getString(indexIngredientColumn), cursor.getInt(indexWeightColumn));
+        DataManager manager = new DataManager();
+        manager.loadIngredientsIndexes(new IResultCallback<HashMap<String, Integer>>() {
+            @Override
+            public void onSuccess(HashMap<String, Integer> pResult) {
+                mIndexes = pResult;
             }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
+
+            @Override
+            public void onError(Exception e) {
+
             }
-        }
+        });
     }
 
     public void saveIndexing() {
         //TODO CHECK SAVING INDEXES IN DB
         DatabaseHelper helper = DatabaseHelper.getInstance(ContextHolder.getInstance().getContext(), DatabaseHelper.CURRENT_VERSION);
-        helper.bulkInsert(IngredientIndexModel.class, convertToContentValues());
+        helper.bulkInsert(IngredientIndexModel.class, convertToContentValues(), null);
     }
 
     public void addToIndexing(Dish pDish) {

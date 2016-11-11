@@ -1,11 +1,8 @@
 package com.example.alex.restaurantx;
 
-import org.json.JSONObject;
 import org.junit.Test;
 
-import java.util.HashMap;
-
-import static org.junit.Assert.*;
+import static junit.framework.Assert.assertEquals;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -17,5 +14,12 @@ public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() throws Exception {
         assertEquals(4, 2 + 2);
+    }
+
+    @Test
+    public void lol(){
+        String s = '"' + "abcdefg" + '"';
+        System.out.println(s);
+        System.out.println(s.substring(1, s.length()-1));
     }
 }

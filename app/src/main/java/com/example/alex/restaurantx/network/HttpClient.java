@@ -94,7 +94,6 @@ public class HttpClient {
                 try {
                     response = executeRequest(requests[0]);
                 } catch (Exception e) {
-                    Log.e("HTTPCLIENT", "doInBackground: ", e);
                     response = e.toString();
                 }
                 return response;

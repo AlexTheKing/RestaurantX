@@ -1,8 +1,8 @@
 package com.example.alex.restaurantx.model;
 
 import android.content.ContentValues;
-import android.graphics.Bitmap;
 
+import com.example.alex.restaurantx.database.DatabaseHelper;
 import com.example.alex.restaurantx.database.models.DishModel;
 import com.example.alex.restaurantx.systems.RecommenderSystem;
 
@@ -15,7 +15,7 @@ public class Dish {
     private String mType;
     private int mCost;
     private String mDescription;
-    private List<String> mIngredients;
+    private String[] mIngredients;
     private final Vote mVote = new Vote();
     private String mBitmapUrl;
 
@@ -59,11 +59,11 @@ public class Dish {
         mBitmapUrl = pBitmapUrl;
     }
 
-    public List<String> getIngredients() {
+    public String[] getIngredients() {
         return mIngredients;
     }
 
-    public Dish(String pName, int pCost, String pWeight, List<String> pIngredients) {
+    public Dish(String pName, int pCost, String pWeight, String[] pIngredients) {
         mName = pName;
         mCost = pCost;
         mWeight = pWeight;
@@ -78,24 +78,26 @@ public class Dish {
 
     public String getIngredientsAsString() {
         StringBuilder builder = new StringBuilder();
+        int index = 0;
         for (String ingredient : mIngredients) {
-            builder.append(ingredient + ((mIngredients.indexOf(ingredient) != mIngredients.size() - 1) ? ", " : ""));
+            builder.append(ingredient + ((index != mIngredients.length - 1) ? ", " : ""));
+            index++;
         }
         return builder.toString();
     }
 
     public ContentValues convert() {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DishModel.ID, "NULL");
-        contentValues.put(DishModel.NAME, mName);
-        contentValues.put(DishModel.TYPE, mType);
-        contentValues.put(DishModel.WEIGHT, mWeight);
+        contentValues.put(DishModel.ID, (Integer)null);
+        contentValues.put(DishModel.NAME, DatabaseHelper.getSqlStringInterpret(mName));
+        contentValues.put(DishModel.TYPE, DatabaseHelper.getSqlStringInterpret(mType));
+        contentValues.put(DishModel.WEIGHT, DatabaseHelper.getSqlStringInterpret(mWeight));
         contentValues.put(DishModel.COST, mCost);
-        contentValues.put(DishModel.DESCRIPTION, mDescription);
-        contentValues.put(DishModel.INGREDIENTS, getIngredientsAsString());
+        contentValues.put(DishModel.DESCRIPTION, DatabaseHelper.getSqlStringInterpret(mDescription));
+        contentValues.put(DishModel.INGREDIENTS, DatabaseHelper.getSqlStringInterpret(getIngredientsAsString()));
         contentValues.put(DishModel.USER_ESTIMATION, mVote.getUserEstimation());
         contentValues.put(DishModel.AVERAGE_ESTIMATION, mVote.getAverageEstimation());
-        contentValues.put(DishModel.BITMAP_URL, mBitmapUrl);
+        contentValues.put(DishModel.BITMAP_URL, DatabaseHelper.getSqlStringInterpret(mBitmapUrl));
         return contentValues;
     }
 
@@ -110,7 +112,8 @@ public class Dish {
                 throw new IllegalArgumentException("pEstimation must be >= 1 and <= " + MAX_ESTIMATION);
             }
             mUserEstimation = pEstimation;
-            RecommenderSystem.getInstance().updateVoteForDish(Dish.this);
+            //TODO : ADD RECOMMENDER SYSTEM USING
+            //RecommenderSystem.getInstance().updateVoteForDish(Dish.this);
         }
 
         public int getUserEstimation() {

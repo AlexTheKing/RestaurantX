@@ -1,5 +1,8 @@
 package com.example.alex.restaurantx.json;
 
+import android.os.AsyncTask;
+
+import com.example.alex.restaurantx.callbacks.IResultCallback;
 import com.example.alex.restaurantx.model.Dish;
 
 import org.json.JSONArray;
@@ -7,43 +10,84 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class JsonHandler {
 
     private static JsonHandler sHandler;
 
-    public List<String> parseTypesOfDishes(String pJsonString) throws JSONException {
-        List<String> types = new ArrayList<>();
-        JSONObject rootObject = new JSONObject(pJsonString).getJSONObject("response");
-        JSONArray typesArray = rootObject.getJSONArray("types");
-        for (int index = 0; index < typesArray.length(); index++) {
-            types.add(typesArray.getString(index));
-        }
-        return types;
+    public void parseTypesOfDishes(final String pJsonString, final IResultCallback<List<String>> pCallback) {
+        new AsyncTask<String, Void, List<String>>() {
+            @Override
+            protected List<String> doInBackground(String... pJsonStrings) {
+                try {
+                    List<String> types = new ArrayList<>();
+                    JSONObject rootObject = new JSONObject(pJsonStrings[0]).getJSONObject("response");
+                    JSONArray typesArray = rootObject.getJSONArray("types");
+                    for (int index = 0; index < typesArray.length(); index++) {
+                        types.add(typesArray.getString(index));
+                    }
+                    return types;
+                } catch (JSONException e) {
+                    pCallback.onError(e);
+                    return null;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(List<String> pStrings) {
+                if (pStrings != null) {
+                    pCallback.onSuccess(pStrings);
+                }
+            }
+        }.execute(pJsonString);
     }
 
-    public HashMap<String, List<Dish>> parseMenu(String pJsonString, List<String> pTypesOfDishes) throws JSONException {
-        HashMap<String, List<Dish>> menu = new HashMap<>();
-        JSONObject rootObject = new JSONObject(pJsonString).getJSONObject("response");
-        for (int index = 0; index < rootObject.length(); index++) {
-            JSONArray jsonDishesOfTypeArray = rootObject.getJSONArray(pTypesOfDishes.get(index));
-            menu.put(pTypesOfDishes.get(index), new ArrayList<Dish>());
-            for (int index2 = 0; index2 < jsonDishesOfTypeArray.length(); index2++) {
-                JSONObject jsonDishObject = jsonDishesOfTypeArray.getJSONObject(index2);
-                String name = jsonDishObject.getString("name");
-                int cost = jsonDishObject.getInt("cost");
-                String weight = jsonDishObject.getString("weight");
-                List<String> ingredients = new ArrayList<>();
-                JSONArray jsonIngredientsArray = jsonDishObject.getJSONArray("ingredients");
-                for (int index3 = 0; index3 < jsonIngredientsArray.length(); index3++) {
-                    ingredients.add(jsonIngredientsArray.getString(index3));
+    public void parseMenu(final String pJsonString, final String pTypeOfDishes, final IResultCallback<List<Dish>> pCallback) {
+        new AsyncTask<String, Void, List<Dish>>() {
+            @Override
+            protected List<Dish> doInBackground(String... pJsonStrings) {
+                try {
+                    List<Dish> menu = new ArrayList<>();
+                    JSONObject rootObject = new JSONObject(pJsonStrings[0]).getJSONObject("response");
+                    JSONArray jsonArrayDishesOfType = rootObject.getJSONArray(pTypeOfDishes);
+                    for (int dishesIndex = 0; dishesIndex < jsonArrayDishesOfType.length(); dishesIndex++) {
+                        JSONObject jsonDishObject = jsonArrayDishesOfType.getJSONObject(dishesIndex);
+                        String name = jsonDishObject.getString("name");
+                        int cost = jsonDishObject.getInt("cost");
+                        String weight = jsonDishObject.getString("weight");
+                        String description = jsonDishObject.getString("description");
+                        //TODO : RESOLVE PROBLEM WITH USER ESTIMATION
+                        int userEstimation = 1;
+                        float averageEstimation = (float) jsonDishObject.getDouble("average_estimation");
+                        String bitmapUrl = jsonDishObject.getString("bitmap_url");
+                        JSONArray jsonIngredientsArray = jsonDishObject.getJSONArray("ingredients");
+                        String ingredients[] = new String[jsonIngredientsArray.length()];
+                        for (int ingredientIndex = 0; ingredientIndex < jsonIngredientsArray.length(); ingredientIndex++) {
+                            ingredients[ingredientIndex] = jsonIngredientsArray.getString(ingredientIndex);
+                        }
+                        Dish dish = new Dish(name, cost, weight, ingredients);
+                        dish.setType(pTypeOfDishes);
+                        dish.setDescription(description);
+                        dish.setBitmapUrl(bitmapUrl);
+                        dish.getVote().setUserEstimation(userEstimation);
+                        dish.getVote().setAverageEstimation(averageEstimation);
+                        menu.add(dish);
+                    }
+                    return menu;
+                } catch (JSONException e) {
+                    pCallback.onError(e);
+                    return null;
                 }
-                menu.get(pTypesOfDishes.get(index)).add(new Dish(name, cost, weight, ingredients));
             }
-        }
-        return menu;
+
+            @Override
+            protected void onPostExecute(List<Dish> pMenu) {
+                if (pMenu != null) {
+                    pCallback.onSuccess(pMenu);
+                }
+            }
+        }.execute(pJsonString);
     }
 
 }

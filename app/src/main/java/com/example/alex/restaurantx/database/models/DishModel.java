@@ -19,10 +19,10 @@ public class DishModel {
     @dbText
     public static final String NAME = "name";
 
-    @dbInteger
+    @dbText
     public static final String WEIGHT = "weight";
 
-    @dbReal
+    @dbInteger
     public static final String COST = "cost";
 
     @dbText
@@ -32,7 +32,7 @@ public class DishModel {
     public static final String INGREDIENTS = "ingredients";
 
     @dbInteger
-    public static final String USER_ESTIMATION = "estimation";
+    public static final String USER_ESTIMATION = "user_estimation";
 
     @dbReal
     public static final String AVERAGE_ESTIMATION = "average_estimation";
