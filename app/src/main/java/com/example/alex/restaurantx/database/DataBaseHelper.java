@@ -36,7 +36,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private DatabaseHelper(Context pContext, int pVersion) {
         super(pContext, mDatabaseName, null, pVersion);
+        // TODO : REMOVE DELETING DATABASE CODE LINE
         ContextHolder.getInstance().getContext().deleteDatabase(mDatabaseName);
+        Log.d("MYDBHELPER", "DatabaseHelper: prev db deleted");
         getWritableDatabase();
     }
 
@@ -85,7 +87,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     if (type != null) {
                         final String value = (String) fields[i].get(null);
                         builder.append(String.format(Locale.US, SQL_TABLE_CREATE_FIELD_TEMPLATE, value, type, additionalKeys));
-                        if (i < fields.length - 2) {
+                        if (i < fields.length - 1) {
                             builder.append(",");
                         }
                     }
@@ -112,6 +114,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         for (final Class<?> clazz : TablesList.MODELS) {
             final String sql = getTableCreateQuery(clazz);
             if (sql != null) {
+                Log.d("MYDBHELPER", "onCreate: " + sql);
                 pDatabase.execSQL(sql);
             }
         }
