@@ -112,8 +112,12 @@ public class Dish {
                 throw new IllegalArgumentException("pEstimation must be >= 1 and <= " + MAX_ESTIMATION);
             }
             mUserEstimation = pEstimation;
-            //TODO : ADD RECOMMENDER SYSTEM USING
-            //RecommenderSystem.getInstance().updateVoteForDish(Dish.this);
+        }
+
+        public void userSetUserEsimation(int pEstimation) throws IllegalArgumentException {
+            setUserEstimation(pEstimation);
+            //TODO : CHECK RECOMMENDER SYSTEM USING
+            RecommenderSystem.getInstance().updateVoteForDish(Dish.this);
         }
 
         public int getUserEstimation() {

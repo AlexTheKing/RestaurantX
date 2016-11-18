@@ -7,11 +7,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.alex.restaurantx.adapter.DataAdapter;
+import com.example.alex.restaurantx.api.ApiManager;
 import com.example.alex.restaurantx.callbacks.IClickCallback;
 import com.example.alex.restaurantx.callbacks.IResultCallback;
+import com.example.alex.restaurantx.imageloader.ImageLoader;
 import com.example.alex.restaurantx.json.JsonHandler;
 import com.example.alex.restaurantx.model.Dish;
 import com.example.alex.restaurantx.systems.DataManager;
@@ -178,6 +183,9 @@ public class DishesListActivity extends AppCompatActivity {
         final String type = getIntent().getStringExtra("type");
         TextView textView = (TextView) findViewById(R.id.type_dishes_header);
         textView.setText(type);
+        String[] options = getResources().getStringArray(R.array.drawer_options_eng);
+        ListView drawerListView = (ListView) findViewById(R.id.drawer_listview);
+        drawerListView.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_element, R.id.drawer_textview, options));
         loadDishesOfType(type, new IResultCallback<List<Dish>>() {
             @Override
             public void onSuccess(List<Dish> pDishes) {
@@ -192,6 +200,20 @@ public class DishesListActivity extends AppCompatActivity {
 
             }
         });
+        //TODO : load image from url from backend
+        String debugUrl = "https://static.dezeen.com/uploads/2014/11/Milan-food-course-IULM-University-and-Scuola-Politecnica-di-Design_dezeen_sq.jpg";
+        ImageLoader.getInstance().downloadAndDraw(debugUrl, (ImageView) findViewById(R.id.drawer_image), null, 480, 400);
+//        new ApiManager().getSlideMenuImageMethod(mBaseUrl, new IResultCallback<String>() {
+//            @Override
+//            public void onSuccess(String pUrl) {
+//                ImageLoader.getInstance().downloadAndDraw(pUrl, (ImageView) findViewById(R.id.drawer_image), null);
+//            }
+//
+//            @Override
+//            public void onError(Exception e) {
+//
+//            }
+//        });
     }
 
     private void loadDishesOfType(final String type, final IResultCallback<List<Dish>> pCallback) {

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="drawer_options_eng">
+        <item>Sort by most preferred ingredients</item>
+        <item>Sort by names</item>
+    </string-array>
+</resources>

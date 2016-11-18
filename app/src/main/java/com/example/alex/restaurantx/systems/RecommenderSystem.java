@@ -1,5 +1,10 @@
 package com.example.alex.restaurantx.systems;
 
+import android.provider.ContactsContract;
+
+import com.example.alex.restaurantx.database.DatabaseHelper;
+import com.example.alex.restaurantx.database.models.DishModel;
+import com.example.alex.restaurantx.holder.ContextHolder;
 import com.example.alex.restaurantx.model.Dish;
 import com.example.alex.restaurantx.model.IngredientIndex;
 
@@ -24,7 +29,10 @@ public class RecommenderSystem {
     }
 
     public void updateVoteForDish(Dish pDish) {
-        //TODO UPDATE VOTE FOR DISH
+        DatabaseHelper helper = DatabaseHelper.getInstance(ContextHolder.getInstance().getContext(), DatabaseHelper.CURRENT_VERSION);
+        helper.delete(DishModel.class, null, "name = ?", DatabaseHelper.getSqlStringInterpret(pDish.getName()));
+        helper.insert(DishModel.class, pDish.convert(), null);
+        //TODO : SEND NEW VOTE TO BACKEND FOR UPDATE
     }
 
     private List<Dish> getSortedMenuByTopVotes(List<Dish> pDishesOfOneType) {

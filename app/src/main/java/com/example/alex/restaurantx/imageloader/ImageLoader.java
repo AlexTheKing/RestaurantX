@@ -61,7 +61,7 @@ public class ImageLoader {
         return sLoader;
     }
 
-    public void downloadAndDraw(final String pUrl, final ImageView pView, @Nullable final IBitmapDownloadedCallback pCallback) {
+    public void downloadAndDraw(final String pUrl, final ImageView pView, @Nullable final IBitmapDownloadedCallback pCallback, final int... pArgs) {
         if (findModel(pUrl) != -1) {
             risePriority(pUrl);
             recalculatePriorities();
@@ -76,7 +76,12 @@ public class ImageLoader {
         Log.d(TAG, "downloadAndDraw: CACHED: " + (cachedBitmap == null ? "NO" : "YES") + " " + pUrl);
         if (cachedBitmap != null && pView.getTag() == pUrl) {
             Log.d(TAG, "downloadAndDraw: FROM LRU CACHE " + pUrl);
-            pView.setImageBitmap(cachedBitmap);
+            if(pArgs.length != 0) {
+                Bitmap resizedBitmap = Bitmap.createScaledBitmap(cachedBitmap, pArgs[0], pArgs[1], true);
+                pView.setImageBitmap(resizedBitmap);
+            } else {
+                pView.setImageBitmap(cachedBitmap);
+            }
             if (pCallback != null) {
                 pCallback.onDownload(cachedBitmap);
             }
@@ -110,7 +115,10 @@ public class ImageLoader {
                 }
                 return bitmap;
             }
-        }, pUrl, null, new IResultCallback<Bitmap>() {
+        },
+        pUrl,
+        null,
+        new IResultCallback<Bitmap>() {
 
             private void cleanStack() {
                 synchronized (mLockObj) {
@@ -132,7 +140,12 @@ public class ImageLoader {
                         }
                     }
                     if (pView.getTag() == pUrl) {
-                        pView.setImageBitmap(pBitmap);
+                        if(pArgs.length != 0) {
+                            Bitmap resizedBitmap = Bitmap.createScaledBitmap(pBitmap, pArgs[0], pArgs[1], true);
+                            pView.setImageBitmap(resizedBitmap);
+                        } else {
+                            pView.setImageBitmap(pBitmap);
+                        }
                         if (pCallback != null) {
                             pCallback.onDownload(pBitmap);
                         }

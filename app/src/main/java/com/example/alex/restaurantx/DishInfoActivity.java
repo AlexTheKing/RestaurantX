@@ -16,6 +16,7 @@ import com.example.alex.restaurantx.holder.ContextHolder;
 import com.example.alex.restaurantx.imageloader.ImageLoader;
 import com.example.alex.restaurantx.model.Dish;
 import com.example.alex.restaurantx.systems.DataManager;
+import com.example.alex.restaurantx.systems.RecommenderSystem;
 
 import java.util.List;
 
@@ -44,7 +45,7 @@ public class DishInfoActivity extends AppCompatActivity {
         dataManager.loadDishes(new IResultCallback<List<Dish>>() {
             @Override
             public void onSuccess(List<Dish> pDishes) {
-                Dish dish = pDishes.get(0);
+                final Dish dish = pDishes.get(0);
                 dishType.setText(dish.getType());
                 dishWeight.setText(dish.getWeight());
                 dishCost.setText(String.valueOf(dish.getCost()) + getString(R.string.basic_currency));
@@ -53,6 +54,14 @@ public class DishInfoActivity extends AppCompatActivity {
                 dishUserRating.setRating(dish.getVote().getUserEstimation());
                 dishAverageRating.setText(String.valueOf(dish.getVote().getAverageEstimation()));
                 ImageLoader.getInstance().downloadAndDraw(dish.getBitmapUrl(), dishImage, null);
+                dishUserRating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+                    @Override
+                    public void onRatingChanged(RatingBar pRatingBar, float pEstimation, boolean pIsFromUser) {
+                        if(pIsFromUser){
+                            dish.getVote().userSetUserEsimation((int) pEstimation);
+                        }
+                    }
+                });
             }
 
             @Override

@@ -10,6 +10,7 @@ public class ApiManager {
     private String mPartUrl = "restaurant/api/";
     private String mDishTypesMethod = "dishtypes.txt";
     private String mMenuMethod = "menu.txt";
+    private String mSlideImageMethod = "slide.png";
     private String mResponse;
     private final Object mLock = new Object();
 
@@ -19,6 +20,10 @@ public class ApiManager {
 
     public void getMenuMethod(String pBaseUrl, IResultCallback pCallback) {
         makeApiRequest(pBaseUrl, mMenuMethod, pCallback);
+    }
+
+    public void getSlideMenuImageMethod(String pBaseUrl, IResultCallback pCallback){
+        makeApiRequest(pBaseUrl, mSlideImageMethod, pCallback);
     }
 
     private void makeApiRequest(String pBaseUrl, String pMethodUrl, final IResultCallback<String> pCallback) {
