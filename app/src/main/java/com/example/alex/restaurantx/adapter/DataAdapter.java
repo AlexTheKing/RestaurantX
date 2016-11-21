@@ -13,26 +13,26 @@ import java.util.List;
 
 public class DataAdapter extends RecyclerView.Adapter<DataAdapter.DataHolder> {
 
-    private List<String> mData;
-    private IClickCallback mCallback;
+    private final List<String> mData;
+    private final IClickCallback mCallback;
 
-    public DataAdapter(List<String> pTypes, IClickCallback pCallback) {
+    public DataAdapter(final List<String> pTypes, final IClickCallback pCallback) {
         mData = pTypes;
         mCallback = pCallback;
     }
 
     @Override
-    public DataHolder onCreateViewHolder(ViewGroup pParent, int pViewType) {
-        View view = LayoutInflater.from(pParent.getContext()).inflate(R.layout.list_item, pParent, false);
+    public DataHolder onCreateViewHolder(final ViewGroup pParent, final int pViewType) {
+        final View view = LayoutInflater.from(pParent.getContext()).inflate(R.layout.list_item, pParent, false);
         return new DataHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(DataHolder pHolder, final int pPosition) {
+    public void onBindViewHolder(final DataHolder pHolder, final int pPosition) {
         pHolder.mTextView.setText(mData.get(pPosition));
         pHolder.mTextView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View pView) {
+            public void onClick(final View pView) {
                 mCallback.onClick(pPosition);
             }
         });
@@ -45,9 +45,9 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.DataHolder> {
 
     static class DataHolder extends RecyclerView.ViewHolder {
 
-        TextView mTextView;
+        final TextView mTextView;
 
-        DataHolder(View pView) {
+        DataHolder(final View pView) {
             super(pView);
             mTextView = (TextView) pView.findViewById(android.R.id.text1);
         }

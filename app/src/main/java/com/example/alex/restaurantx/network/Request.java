@@ -13,7 +13,7 @@ public class Request {
         return mMethod;
     }
 
-    private void setMethod(String mMethod) {
+    private void setMethod(final String mMethod) {
         this.mMethod = mMethod;
     }
 
@@ -21,7 +21,7 @@ public class Request {
         return mUrl;
     }
 
-    private void setUrl(String mUrl) {
+    private void setUrl(final String mUrl) {
         this.mUrl = mUrl;
     }
 
@@ -29,7 +29,7 @@ public class Request {
         return mHeaders;
     }
 
-    private void setHeaders(Map<String, String> mHeaders) {
+    private void setHeaders(final Map<String, String> mHeaders) {
         this.mHeaders = mHeaders;
     }
 
@@ -37,30 +37,30 @@ public class Request {
         return mBody;
     }
 
-    private void setBody(String mBody) {
+    private void setBody(final String mBody) {
         this.mBody = mBody;
     }
 
     public static class Builder {
 
-        private Request request = new Request();
+        private final Request request = new Request();
 
-        public Builder setUrl(String pUrl) {
+        public Builder setUrl(final String pUrl) {
             this.request.setUrl(pUrl);
             return this;
         }
 
-        public Builder setHeaders(Map<String, String> pHeaders) {
+        public Builder setHeaders(final Map<String, String> pHeaders) {
             this.request.setHeaders(pHeaders);
             return this;
         }
 
-        public Builder setBody(String pBody) {
+        public Builder setBody(final String pBody) {
             this.request.setBody(pBody);
             return this;
         }
 
-        public Builder setMethod(String pMethod) {
+        public Builder setMethod(final String pMethod) {
             this.request.setMethod(pMethod);
             return this;
         }
@@ -69,5 +69,4 @@ public class Request {
             return request;
         }
     }
-
 }

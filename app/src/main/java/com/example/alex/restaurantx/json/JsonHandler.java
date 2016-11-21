@@ -14,28 +14,26 @@ import java.util.List;
 
 public class JsonHandler {
 
-    private static JsonHandler sHandler;
-
     public void parseTypesOfDishes(final String pJsonString, final IResultCallback<List<String>> pCallback) {
         new AsyncTask<String, Void, List<String>>() {
             @Override
-            protected List<String> doInBackground(String... pJsonStrings) {
+            protected List<String> doInBackground(final String... pJsonStrings) {
                 try {
-                    List<String> types = new ArrayList<>();
-                    JSONObject rootObject = new JSONObject(pJsonStrings[0]).getJSONObject("response");
-                    JSONArray typesArray = rootObject.getJSONArray("types");
+                    final List<String> types = new ArrayList<>();
+                    final JSONObject rootObject = new JSONObject(pJsonStrings[0]).getJSONObject("response");
+                    final JSONArray typesArray = rootObject.getJSONArray("types");
                     for (int index = 0; index < typesArray.length(); index++) {
                         types.add(typesArray.getString(index));
                     }
                     return types;
-                } catch (JSONException e) {
+                } catch (final JSONException e) {
                     pCallback.onError(e);
                     return null;
                 }
             }
 
             @Override
-            protected void onPostExecute(List<String> pStrings) {
+            protected void onPostExecute(final List<String> pStrings) {
                 if (pStrings != null) {
                     pCallback.onSuccess(pStrings);
                 }
@@ -46,27 +44,26 @@ public class JsonHandler {
     public void parseMenu(final String pJsonString, final String pTypeOfDishes, final IResultCallback<List<Dish>> pCallback) {
         new AsyncTask<String, Void, List<Dish>>() {
             @Override
-            protected List<Dish> doInBackground(String... pJsonStrings) {
+            protected List<Dish> doInBackground(final String... pJsonStrings) {
                 try {
-                    List<Dish> menu = new ArrayList<>();
-                    JSONObject rootObject = new JSONObject(pJsonStrings[0]).getJSONObject("response");
-                    JSONArray jsonArrayDishesOfType = rootObject.getJSONArray(pTypeOfDishes);
+                    final List<Dish> menu = new ArrayList<>();
+                    final JSONObject rootObject = new JSONObject(pJsonStrings[0]).getJSONObject("response");
+                    final JSONArray jsonArrayDishesOfType = rootObject.getJSONArray(pTypeOfDishes);
                     for (int dishesIndex = 0; dishesIndex < jsonArrayDishesOfType.length(); dishesIndex++) {
-                        JSONObject jsonDishObject = jsonArrayDishesOfType.getJSONObject(dishesIndex);
-                        String name = jsonDishObject.getString("name");
-                        int cost = jsonDishObject.getInt("cost");
-                        String weight = jsonDishObject.getString("weight");
-                        String description = jsonDishObject.getString("description");
-                        //TODO : RESOLVE PROBLEM WITH USER ESTIMATION
-                        int userEstimation = 1;
-                        float averageEstimation = (float) jsonDishObject.getDouble("average_estimation");
-                        String bitmapUrl = jsonDishObject.getString("bitmap_url");
-                        JSONArray jsonIngredientsArray = jsonDishObject.getJSONArray("ingredients");
-                        String ingredients[] = new String[jsonIngredientsArray.length()];
+                        final JSONObject jsonDishObject = jsonArrayDishesOfType.getJSONObject(dishesIndex);
+                        final String name = jsonDishObject.getString("name");
+                        final int cost = jsonDishObject.getInt("cost");
+                        final String weight = jsonDishObject.getString("weight");
+                        final String description = jsonDishObject.getString("description");
+                        final int userEstimation = -1;
+                        final float averageEstimation = (float) jsonDishObject.getDouble("average_estimation");
+                        final String bitmapUrl = jsonDishObject.getString("bitmap_url");
+                        final JSONArray jsonIngredientsArray = jsonDishObject.getJSONArray("ingredients");
+                        final String ingredients[] = new String[jsonIngredientsArray.length()];
                         for (int ingredientIndex = 0; ingredientIndex < jsonIngredientsArray.length(); ingredientIndex++) {
                             ingredients[ingredientIndex] = jsonIngredientsArray.getString(ingredientIndex);
                         }
-                        Dish dish = new Dish(name, cost, weight, ingredients);
+                        final Dish dish = new Dish(name, cost, weight, ingredients);
                         dish.setType(pTypeOfDishes);
                         dish.setDescription(description);
                         dish.setBitmapUrl(bitmapUrl);
@@ -75,19 +72,18 @@ public class JsonHandler {
                         menu.add(dish);
                     }
                     return menu;
-                } catch (JSONException e) {
+                } catch (final JSONException e) {
                     pCallback.onError(e);
                     return null;
                 }
             }
 
             @Override
-            protected void onPostExecute(List<Dish> pMenu) {
+            protected void onPostExecute(final List<Dish> pMenu) {
                 if (pMenu != null) {
                     pCallback.onSuccess(pMenu);
                 }
             }
         }.execute(pJsonString);
     }
-
 }

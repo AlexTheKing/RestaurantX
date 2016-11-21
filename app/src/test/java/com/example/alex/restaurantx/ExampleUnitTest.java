@@ -17,9 +17,9 @@ public class ExampleUnitTest {
     }
 
     @Test
-    public void lol(){
+    public void lol() {
         String s = '"' + "abcdefg" + '"';
         System.out.println(s);
-        System.out.println(s.substring(1, s.length()-1));
+        System.out.println(s.substring(1, s.length() - 1));
     }
 }

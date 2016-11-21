@@ -1,23 +1,24 @@
 package com.example.alex.restaurantx.threads;
 
 import android.os.Handler;
+import android.support.annotation.NonNull;
 
 import com.example.alex.restaurantx.callbacks.IResultCallback;
 
 public class PriorityRunnable<Params, Progress, Result> implements Runnable, Comparable<PriorityRunnable> {
 
-    private ITask<Params, Progress, Result> mTask;
-    private Params mParams;
-    private IProgressCallback<Progress> mProgressCallback;
-    private IResultCallback<Result> mResultCallback;
-    private Handler mHandler;
+    private final ITask<Params, Progress, Result> mTask;
+    private final Params mParams;
+    private final IProgressCallback<Progress> mProgressCallback;
+    private final IResultCallback<Result> mResultCallback;
+    private final Handler mHandler;
     private int mPriority;
 
     public int getPriority() {
         return mPriority;
     }
 
-    public void setPriority(int pPriority) {
+    public void setPriority(final int pPriority) {
         mPriority = pPriority;
     }
 
@@ -61,8 +62,8 @@ public class PriorityRunnable<Params, Progress, Result> implements Runnable, Com
     }
 
     @Override
-    public int compareTo(PriorityRunnable pRunnable) {
-        int otherRunnablePriority = pRunnable.getPriority();
+    public int compareTo(@NonNull final PriorityRunnable pRunnable) {
+        final int otherRunnablePriority = pRunnable.getPriority();
         //Because PriorityBlockingQueue places less objects to the up of the queue
         //So they are executed earlier
         if (mPriority > otherRunnablePriority) {
@@ -73,5 +74,4 @@ public class PriorityRunnable<Params, Progress, Result> implements Runnable, Com
             return 1;
         }
     }
-
 }

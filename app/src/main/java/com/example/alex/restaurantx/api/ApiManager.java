@@ -1,42 +1,45 @@
 package com.example.alex.restaurantx.api;
 
 import com.example.alex.restaurantx.callbacks.IResultCallback;
+import com.example.alex.restaurantx.constants.Constants;
 import com.example.alex.restaurantx.network.HttpClient;
 import com.example.alex.restaurantx.network.Request;
 
 public class ApiManager {
 
     //restaurant/api/request?method=
-    private String mPartUrl = "restaurant/api/";
-    private String mDishTypesMethod = "dishtypes.txt";
-    private String mMenuMethod = "menu.txt";
-    private String mSlideImageMethod = "slide.png";
-    private String mResponse;
-    private final Object mLock = new Object();
+    private final String mPartUrl = "restaurant/api/";
+    private final String mDishTypesMethod = "dishtypes.txt";
+    private final String mMenuMethod = "menu.txt";
+    private final String mSlideImageMethod = "slide.png";
 
-    public void getTypesMethod(String pBaseUrl, IResultCallback pCallback) {
+    public void getTypesMethod(final String pBaseUrl, final IResultCallback<String> pCallback) {
         makeApiRequest(pBaseUrl, mDishTypesMethod, pCallback);
     }
 
-    public void getMenuMethod(String pBaseUrl, IResultCallback pCallback) {
+    public void getMenuMethod(final String pBaseUrl, final IResultCallback<String> pCallback) {
         makeApiRequest(pBaseUrl, mMenuMethod, pCallback);
     }
 
-    public void getSlideMenuImageMethod(String pBaseUrl, IResultCallback pCallback){
+    public void getSlideMenuImageMethod(final String pBaseUrl, final IResultCallback<String> pCallback) {
         makeApiRequest(pBaseUrl, mSlideImageMethod, pCallback);
     }
 
-    private void makeApiRequest(String pBaseUrl, String pMethodUrl, final IResultCallback<String> pCallback) {
-        HttpClient client = HttpClient.getInstance();
-        final String[] response = new String[1];
-        client.makeAsyncRequest(new Request.Builder().setMethod("GET").setUrl(pBaseUrl + mPartUrl + pMethodUrl).build(), new IResultCallback<String>() {
+    private void makeApiRequest(final String pBaseUrl, final String pMethodUrl, final IResultCallback<String> pCallback) {
+        final HttpClient client = new HttpClient();
+        final Request request = new Request.Builder()
+                .setMethod(Constants.GET_METHOD)
+                .setUrl(pBaseUrl + mPartUrl + pMethodUrl)
+                .build();
+
+        client.makeAsyncRequest(request, new IResultCallback<String>() {
             @Override
-            public void onSuccess(String pResponse) {
+            public void onSuccess(final String pResponse) {
                 pCallback.onSuccess(pResponse);
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(final Exception e) {
 
             }
         });

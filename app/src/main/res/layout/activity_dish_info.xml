@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
     <LinearLayout
         android:orientation="vertical"
@@ -14,7 +14,7 @@
             android:layout_height="300dp"
             android:id="@+id/dish_image_full"
             android:contentDescription="@string/dish_photo_description"
-            android:src="@android:color/black" />
+            android:src="@android:color/black"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -44,7 +44,7 @@
                     android:id="@+id/dish_average_rating"
                     android:layout_gravity="center"
                     android:textSize="22sp"
-                    android:layout_marginStart="8dp" />
+                    android:layout_marginStart="8dp"/>
             </LinearLayout>
 
             <TextView
@@ -65,19 +65,19 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/dish_type"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
                     android:layout_marginStart="8dp"
-                    android:id="@+id/dish_weight" />
+                    android:id="@+id/dish_weight"/>
 
                 <View
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -92,7 +92,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/dish_description"
                 android:textSize="16sp"
-                android:layout_marginTop="12dp" />
+                android:layout_marginTop="12dp"/>
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -12,8 +12,8 @@ import com.example.alex.restaurantx.imageloader.ImageLoader;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.DataHolder> {
 
-    private String[] mData;
-    private IClickCallback mCallback;
+    private final String[] mData;
+    private final IClickCallback mCallback;
 
     public ImageAdapter(String[] pTypes, IClickCallback pCallback) {
         mData = pTypes;
@@ -44,7 +44,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.DataHolder> 
 
     static class DataHolder extends RecyclerView.ViewHolder {
 
-        ImageView mImageView;
+        final ImageView mImageView;
 
         DataHolder(View pView) {
             super(pView);

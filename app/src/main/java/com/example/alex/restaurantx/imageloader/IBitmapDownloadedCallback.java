@@ -4,6 +4,6 @@ import android.graphics.Bitmap;
 
 public interface IBitmapDownloadedCallback {
 
-    void onDownload(Bitmap pBitmap);
+    void onDownload(final Bitmap pBitmap);
 
 }

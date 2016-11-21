@@ -4,5 +4,5 @@ public interface IResultCallback<Result> {
 
     void onSuccess(Result pResult);
 
-    void onError(Exception e);
+    void onError(final Exception e);
 }

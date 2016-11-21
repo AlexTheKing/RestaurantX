@@ -9,8 +9,8 @@ public class ThreadManager {
 
     private static ThreadManager sThreadManager;
     private int mNumberOfThreads = 3;
-    private ExecutorService mExecutorService;
-    private PriorityBlockingQueue<Runnable> mThreadQueue;
+    private final ExecutorService mExecutorService;
+    private final PriorityBlockingQueue<Runnable> mThreadQueue;
 
     private ThreadManager() {
         if (Runtime.getRuntime().availableProcessors() > 2) {
@@ -28,7 +28,7 @@ public class ThreadManager {
         return sThreadManager;
     }
 
-    public <Params, Progress, Result> void execute(PriorityRunnable<Params, Progress, Result> pRunnable) {
+    public <Params, Progress, Result> void execute(final PriorityRunnable<Params, Progress, Result> pRunnable) {
         mThreadQueue.put(pRunnable);
         mExecutorService.execute(pRunnable);
     }

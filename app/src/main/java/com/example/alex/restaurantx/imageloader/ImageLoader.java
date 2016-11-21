@@ -25,21 +25,21 @@ import java.util.Stack;
 public class ImageLoader {
 
     private static ImageLoader sLoader;
-    private HttpClient mClient;
-    private ThreadManager mThreadManagerInstance;
-    private volatile LruCache<String, Bitmap> mLruCache;
-    private volatile Stack<PriorityModel> mDownloadPriorities;
-    private int defaultCacheSize = 12 * 1024 * 1024;
+    private final HttpClient mClient;
+    private final ThreadManager mThreadManagerInstance;
+    private final LruCache<String, Bitmap> mLruCache;
+    private final Stack<PriorityModel> mDownloadPriorities;
+    private final int mDefaultCacheSize = 12 * 1024 * 1024;
     private final Object mLockObj = new Object();
-    private String TAG = "IMAGELOADER";
+    private final String TAG = "IMAGELOADER";
 
     private ImageLoader() {
         mThreadManagerInstance = ThreadManager.getInstance();
         mDownloadPriorities = new Stack<>();
-        mClient = HttpClient.getInstance();
+        mClient = new HttpClient();
         long size;
-        if (Runtime.getRuntime().maxMemory() / 4 > defaultCacheSize) {
-            size = defaultCacheSize;
+        if (Runtime.getRuntime().maxMemory() / 4 > mDefaultCacheSize) {
+            size = mDefaultCacheSize;
         } else {
             size = Runtime.getRuntime().maxMemory() / 4;
         }
@@ -47,7 +47,7 @@ public class ImageLoader {
         mLruCache = new LruCache<String, Bitmap>(((int) size)) {
 
             @Override
-            protected int sizeOf(String pKey, Bitmap pValue) {
+            protected int sizeOf(final String pKey, final Bitmap pValue) {
                 return pKey.getBytes().length + pValue.getByteCount();
             }
 
@@ -76,8 +76,8 @@ public class ImageLoader {
         Log.d(TAG, "downloadAndDraw: CACHED: " + (cachedBitmap == null ? "NO" : "YES") + " " + pUrl);
         if (cachedBitmap != null && pView.getTag() == pUrl) {
             Log.d(TAG, "downloadAndDraw: FROM LRU CACHE " + pUrl);
-            if(pArgs.length != 0) {
-                Bitmap resizedBitmap = Bitmap.createScaledBitmap(cachedBitmap, pArgs[0], pArgs[1], true);
+            if (pArgs.length != 0) {
+                final Bitmap resizedBitmap = Bitmap.createScaledBitmap(cachedBitmap, pArgs[0], pArgs[1], true);
                 pView.setImageBitmap(resizedBitmap);
             } else {
                 pView.setImageBitmap(cachedBitmap);
@@ -87,7 +87,7 @@ public class ImageLoader {
             }
             return;
         }
-        Handler handler = new Handler(Looper.getMainLooper());
+        final Handler handler = new Handler(Looper.getMainLooper());
         final PriorityRunnable<String, Void, Bitmap> priorityRunnable = new PriorityRunnable<>(handler, new ITask<String, Void, Bitmap>() {
 
             @Override
@@ -99,13 +99,13 @@ public class ImageLoader {
                     connection = (HttpURLConnection) mClient.getConnection(new Request.Builder().setUrl(pUrl).setMethod("GET").build());
                     inputStream = connection.getInputStream();
                     bitmap = BitmapFactory.decodeStream(inputStream);
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     Log.e(TAG, "download: ", e);
                 } finally {
                     if (inputStream != null) {
                         try {
                             inputStream.close();
-                        } catch (IOException e) {
+                        } catch (final IOException e) {
                             Log.e(TAG, "download: inputStream did not closed: ", e);
                         }
                     }
@@ -116,51 +116,51 @@ public class ImageLoader {
                 return bitmap;
             }
         },
-        pUrl,
-        null,
-        new IResultCallback<Bitmap>() {
+                pUrl,
+                null,
+                new IResultCallback<Bitmap>() {
 
-            private void cleanStack() {
-                synchronized (mLockObj) {
-                    if (findModel(pUrl) != -1) {
-                        mDownloadPriorities.remove(findModel(pUrl));
+                    private void cleanStack() {
+                        synchronized (mLockObj) {
+                            if (findModel(pUrl) != -1) {
+                                mDownloadPriorities.remove(findModel(pUrl));
+                            }
+                        }
+                        recalculatePriorities();
                     }
-                }
-                recalculatePriorities();
-            }
 
-            @Override
-            public void onSuccess(Bitmap pBitmap) {
-                if (pBitmap != null) {
-                    Log.d(TAG, "onSuccess: DOWNLOADED " + pUrl);
-                    Log.d(TAG, "onSuccess: LAY IN LRU");
-                    synchronized (mLockObj) {
-                        if (!mLruCache.snapshot().containsKey(pUrl)) {
-                            mLruCache.put(pUrl, pBitmap);
+                    @Override
+                    public void onSuccess(final Bitmap pBitmap) {
+                        if (pBitmap != null) {
+                            Log.d(TAG, "onSuccess: DOWNLOADED " + pUrl);
+                            Log.d(TAG, "onSuccess: LAY IN LRU");
+                            synchronized (mLockObj) {
+                                if (!mLruCache.snapshot().containsKey(pUrl)) {
+                                    mLruCache.put(pUrl, pBitmap);
+                                }
+                            }
+                            if (pView.getTag() == pUrl) {
+                                if (pArgs.length != 0) {
+                                    final Bitmap resizedBitmap = Bitmap.createScaledBitmap(pBitmap, pArgs[0], pArgs[1], true);
+                                    pView.setImageBitmap(resizedBitmap);
+                                } else {
+                                    pView.setImageBitmap(pBitmap);
+                                }
+                                if (pCallback != null) {
+                                    pCallback.onDownload(pBitmap);
+                                }
+                            }
                         }
+                        cleanStack();
                     }
-                    if (pView.getTag() == pUrl) {
-                        if(pArgs.length != 0) {
-                            Bitmap resizedBitmap = Bitmap.createScaledBitmap(pBitmap, pArgs[0], pArgs[1], true);
-                            pView.setImageBitmap(resizedBitmap);
-                        } else {
-                            pView.setImageBitmap(pBitmap);
-                        }
-                        if (pCallback != null) {
-                            pCallback.onDownload(pBitmap);
-                        }
-                    }
-                }
-                cleanStack();
-            }
 
-            @Override
-            public void onError(Exception e) {
-                cleanStack();
-                Log.e(TAG, "onError: ", e);
-            }
-        });
-        PriorityModel model = new PriorityModel(priorityRunnable);
+                    @Override
+                    public void onError(final Exception e) {
+                        cleanStack();
+                        Log.e(TAG, "onError: ", e);
+                    }
+                });
+        final PriorityModel model = new PriorityModel(priorityRunnable);
         model.setUrl(pUrl);
         model.setPriority(Thread.MAX_PRIORITY);
         synchronized (mLockObj) {
@@ -170,9 +170,9 @@ public class ImageLoader {
         mThreadManagerInstance.execute(priorityRunnable);
     }
 
-    private synchronized int findModel(String pUrl) {
+    private synchronized int findModel(final String pUrl) {
         int index = 0;
-        for (PriorityModel priorityModel : mDownloadPriorities) {
+        for (final PriorityModel priorityModel : mDownloadPriorities) {
             if (priorityModel.getUrl().equalsIgnoreCase(pUrl)) {
                 return index;
             }
@@ -181,14 +181,14 @@ public class ImageLoader {
         return -1;
     }
 
-    private synchronized void risePriority(String pUrl) {
-        PriorityModel modelToRise = mDownloadPriorities.remove(findModel(pUrl));
+    private synchronized void risePriority(final String pUrl) {
+        final PriorityModel modelToRise = mDownloadPriorities.remove(findModel(pUrl));
         modelToRise.setPriority(Thread.MAX_PRIORITY);
         mDownloadPriorities.push(modelToRise);
     }
 
     private synchronized void recalculatePriorities() {
-        for (PriorityModel priorityModel : mDownloadPriorities) {
+        for (final PriorityModel priorityModel : mDownloadPriorities) {
             int priority = Math.round((float) mDownloadPriorities.indexOf(priorityModel) * 10 / mDownloadPriorities.size());
             if (priority == 0) {
                 priority = Thread.MIN_PRIORITY;

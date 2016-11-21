@@ -4,4 +4,5 @@
     <string name="average">Av:</string>
     <string name="basic_currency">$</string>
     <string name="ingredients_string">"Ingredients: "</string>
+    <string name="menu">Menu</string>
 </resources>
