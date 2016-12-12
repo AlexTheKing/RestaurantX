@@ -18,7 +18,7 @@ import com.example.alex.restaurantx.database.annotations.dbPrimaryKey;
 import com.example.alex.restaurantx.database.annotations.dbReal;
 import com.example.alex.restaurantx.database.annotations.dbText;
 import com.example.alex.restaurantx.database.models.TablesList;
-import com.example.alex.restaurantx.holder.ContextHolder;
+import com.example.alex.restaurantx.holders.ContextHolder;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -87,12 +87,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     if (type != null) {
                         final String value = (String) fields[i].get(null);
                         builder.append(String.format(Locale.US, SQL_TABLE_CREATE_FIELD_TEMPLATE, value, type, additionalKeys));
-                        if (i < fields.length - 1) {
-                            builder.append(",");
-                        }
+                        builder.append(",");
                     }
                 }
-                return String.format(Locale.US, SQL_TABLE_CREATE_TEMPLATE, name, builder.toString());
+                String fieldsAsString = builder.toString().substring(0, builder.length() - 1);
+                return String.format(Locale.US, SQL_TABLE_CREATE_TEMPLATE, name, fieldsAsString);
             } catch (final Exception e) {
                 return null;
             }
@@ -130,7 +129,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             @Override
             protected Cursor doInBackground(final Void... params) {
                 final SQLiteDatabase database = getReadableDatabase();
-                final String sql = "SELECT " + pSqlQuery + " FROM " + getTableName(pModel) + " " + pSqlCondition + ";";
+                String sql = "SELECT " + pSqlQuery + " FROM " + getTableName(pModel);
+                if (pSqlCondition != null) {
+                    sql += " WHERE " + pSqlCondition;
+                }
+                sql += ";";
                 return database.rawQuery(sql, pArgs);
             }
 

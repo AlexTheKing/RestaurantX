@@ -22,8 +22,11 @@ public class DishModel {
     @dbText
     public static final String WEIGHT = "weight";
 
-    @dbInteger
+    @dbReal
     public static final String COST = "cost";
+
+    @dbText
+    public static final String CURRENCY = "currency";
 
     @dbText
     public static final String DESCRIPTION = "description";

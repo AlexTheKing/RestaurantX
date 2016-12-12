@@ -2,12 +2,13 @@ package com.example.alex.restaurantx.systems;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.support.annotation.Nullable;
 
 import com.example.alex.restaurantx.callbacks.IResultCallback;
 import com.example.alex.restaurantx.database.DatabaseHelper;
 import com.example.alex.restaurantx.database.models.DishModel;
 import com.example.alex.restaurantx.database.models.IngredientIndexModel;
-import com.example.alex.restaurantx.holder.ContextHolder;
+import com.example.alex.restaurantx.holders.ContextHolder;
 import com.example.alex.restaurantx.model.Dish;
 import com.example.alex.restaurantx.model.IngredientIndex;
 
@@ -35,6 +36,7 @@ public class DataManager {
                 final int indexTypeColumn = pCursor.getColumnIndex(DishModel.TYPE);
                 final int indexWeightColumn = pCursor.getColumnIndex(DishModel.WEIGHT);
                 final int indexCostColumn = pCursor.getColumnIndex(DishModel.COST);
+                final int indexCurrencyColumn = pCursor.getColumnIndex(DishModel.CURRENCY);
                 final int indexDescriptionColumn = pCursor.getColumnIndex(DishModel.DESCRIPTION);
                 final int indexIngredientsColumn = pCursor.getColumnIndex(DishModel.INGREDIENTS);
                 final int indexUserEstimationColumn = pCursor.getColumnIndex(DishModel.USER_ESTIMATION);
@@ -45,7 +47,8 @@ public class DataManager {
                     final String name = DatabaseHelper.getUsualStringInterpret(pCursor.getString(indexNameColumn));
                     final String type = DatabaseHelper.getUsualStringInterpret(pCursor.getString(indexTypeColumn));
                     final String weight = DatabaseHelper.getUsualStringInterpret(pCursor.getString(indexWeightColumn));
-                    final int cost = pCursor.getInt(indexCostColumn);
+                    final float cost = pCursor.getFloat(indexCostColumn);
+                    final String currency = DatabaseHelper.getUsualStringInterpret(pCursor.getString(indexCurrencyColumn));
                     final String description = DatabaseHelper.getUsualStringInterpret(pCursor.getString(indexDescriptionColumn));
                     final String ingredients[] = DatabaseHelper.getUsualStringInterpret(pCursor.getString(indexIngredientsColumn)).split(splitString);
                     final int userEstimation = pCursor.getInt(indexUserEstimationColumn);
@@ -53,6 +56,7 @@ public class DataManager {
                     final String bitmapUrl = DatabaseHelper.getUsualStringInterpret(pCursor.getString(indexBitmapUrlColumn));
                     final Dish dish = new Dish(name, cost, weight, ingredients);
                     dish.setType(type);
+                    dish.setCurrency(currency);
                     dish.setDescription(description);
                     dish.setBitmapUrl(bitmapUrl);
                     dish.getVote().setUserEstimation(userEstimation);
@@ -70,9 +74,13 @@ public class DataManager {
     }
 
     public void saveDishes(final List<Dish> pDishes) {
+        saveDishes(pDishes, null);
+    }
+
+    public void saveDishes(final List<Dish> pDishes, @Nullable final IResultCallback<Integer> pCallback) {
         final DatabaseHelper helper = DatabaseHelper.getInstance(ContextHolder.getInstance().getContext(), DatabaseHelper.CURRENT_VERSION);
         final List<ContentValues> contentValuesList = getContentValuesListDishes(pDishes);
-        helper.bulkInsert(DishModel.class, contentValuesList, null);
+        helper.bulkInsert(DishModel.class, contentValuesList, pCallback);
     }
 
     private List<ContentValues> getContentValuesListDishes(final List<Dish> pDishes) {

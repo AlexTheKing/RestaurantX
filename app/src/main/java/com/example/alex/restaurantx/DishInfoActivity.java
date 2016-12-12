@@ -1,7 +1,11 @@
 package com.example.alex.restaurantx;
 
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -24,11 +28,12 @@ public class DishInfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dish_info);
         final String dishNameFromIntent = getIntent().getStringExtra(Constants.INTENT_EXTRA_DISHNAME);
-        loadDishFromDatabase(dishNameFromIntent);
+        final boolean haveProhibited = getIntent().getBooleanExtra(Constants.INTENT_EXTRA_HAVE_PROHIBITED, false);
+        loadDishFromDatabase(dishNameFromIntent, haveProhibited);
     }
 
-    private void loadDishFromDatabase(String pDishNameFromIntent) {
-        final String WHERE_CLAUSE = "WHERE " + DishModel.NAME + " = ?";
+    private void loadDishFromDatabase(String pDishNameFromIntent, final boolean pHaveProhibited) {
+        final String WHERE_CLAUSE = DishModel.NAME + " = ?";
         final TextView dishName = (TextView) findViewById(R.id.dish_name);
         dishName.setText(pDishNameFromIntent);
         final TextView dishType = (TextView) findViewById(R.id.dish_type);
@@ -46,16 +51,13 @@ public class DishInfoActivity extends AppCompatActivity {
                 final Dish dish = pDishes.get(0);
                 dishType.setText(dish.getType());
                 dishWeight.setText(dish.getWeight());
-                //TODO : READ ABOUT PLACEHOLDERS
-                dishCost.setText(String.valueOf(dish.getCost()) + getString(R.string.basic_currency));
+                dishCost.setText(String.format("%s"+dish.getCurrency(), String.valueOf(dish.getCost())));
                 dishDescription.setText(dish.getDescription());
-                //TODO : READ ABOUT PLACEHOLDERS
-                dishIngredients.setText(getString(R.string.ingredients_string) + dish.getIngredientsAsString());
-                if (dish.getVote().getUserEstimation() == -1) {
-                    dishUserRating.setRating(dish.getVote().getAverageEstimation());
-                } else {
-                    dishUserRating.setRating(dish.getVote().getUserEstimation());
+                dishIngredients.setText(String.format(getString(R.string.ingredients_string), dish.getIngredientsAsString()));
+                if(pHaveProhibited){
+                    dishIngredients.setTextColor(Color.RED);
                 }
+                dishUserRating.setRating(dish.getVote().getUserEstimation());
                 dishAverageRating.setText(String.valueOf(dish.getVote().getAverageEstimation()));
                 ImageLoader.getInstance().downloadAndDraw(dish.getBitmapUrl(), dishImage, null);
                 dishUserRating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {

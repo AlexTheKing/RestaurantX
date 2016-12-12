@@ -1,4 +1,4 @@
-package com.example.alex.restaurantx.holder;
+package com.example.alex.restaurantx.holders;
 
 import android.content.Context;
 

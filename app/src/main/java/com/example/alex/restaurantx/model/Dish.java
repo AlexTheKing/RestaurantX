@@ -11,7 +11,8 @@ public class Dish {
     private final String mName;
     private final String mWeight;
     private String mType;
-    private final int mCost;
+    private final float mCost;
+    private String mCurrency;
     private String mDescription;
     private final String[] mIngredients;
     private final Vote mVote = new Vote();
@@ -45,8 +46,16 @@ public class Dish {
         return mWeight;
     }
 
-    public int getCost() {
+    public float getCost() {
         return mCost;
+    }
+
+    public String getCurrency() {
+        return mCurrency;
+    }
+
+    public void setCurrency(String pCurrency) {
+        mCurrency = pCurrency;
     }
 
     public String getBitmapUrl() {
@@ -61,7 +70,7 @@ public class Dish {
         return mIngredients;
     }
 
-    public Dish(final String pName, final int pCost, final String pWeight, final String[] pIngredients) {
+    public Dish(final String pName, final float pCost, final String pWeight, final String[] pIngredients) {
         mName = pName;
         mCost = pCost;
         mWeight = pWeight;
@@ -92,6 +101,7 @@ public class Dish {
         contentValues.put(DishModel.TYPE, DatabaseHelper.getSqlStringInterpret(mType));
         contentValues.put(DishModel.WEIGHT, DatabaseHelper.getSqlStringInterpret(mWeight));
         contentValues.put(DishModel.COST, mCost);
+        contentValues.put(DishModel.CURRENCY, DatabaseHelper.getSqlStringInterpret(mCurrency));
         contentValues.put(DishModel.DESCRIPTION, DatabaseHelper.getSqlStringInterpret(mDescription));
         contentValues.put(DishModel.INGREDIENTS, DatabaseHelper.getSqlStringInterpret(getIngredientsAsString()));
         contentValues.put(DishModel.USER_ESTIMATION, mVote.getUserEstimation());

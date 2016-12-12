@@ -8,10 +8,9 @@ import com.example.alex.restaurantx.network.Request;
 public class ApiManager {
 
     //restaurant/api/request?method=
-    private final String mPartUrl = "restaurant/api/";
-    private final String mDishTypesMethod = "dishtypes.txt";
-    private final String mMenuMethod = "menu.txt";
-    private final String mSlideImageMethod = "slide.png";
+    private final String mPartUrl = "api/";
+    private final String mDishTypesMethod = "types";
+    private final String mMenuMethod = "dishes";
 
     public void getTypesMethod(final String pBaseUrl, final IResultCallback<String> pCallback) {
         makeApiRequest(pBaseUrl, mDishTypesMethod, pCallback);
@@ -19,10 +18,6 @@ public class ApiManager {
 
     public void getMenuMethod(final String pBaseUrl, final IResultCallback<String> pCallback) {
         makeApiRequest(pBaseUrl, mMenuMethod, pCallback);
-    }
-
-    public void getSlideMenuImageMethod(final String pBaseUrl, final IResultCallback<String> pCallback) {
-        makeApiRequest(pBaseUrl, mSlideImageMethod, pCallback);
     }
 
     private void makeApiRequest(final String pBaseUrl, final String pMethodUrl, final IResultCallback<String> pCallback) {

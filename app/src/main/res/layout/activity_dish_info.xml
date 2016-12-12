@@ -14,7 +14,8 @@
             android:layout_height="300dp"
             android:id="@+id/dish_image_full"
             android:contentDescription="@string/dish_photo_description"
-            android:src="@android:color/black"/>
+            android:src="@android:color/black"
+            android:tint="#00FFFF00"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -25,7 +26,6 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_marginTop="10dp">
 
                 <RatingBar
@@ -33,27 +33,28 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/dish_user_rating"
+                    android:layout_gravity="center"
                     android:numStars="5"
-                    android:stepSize="1"
-                    android:rating="3"/>
+                    android:stepSize="1"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/average"
                     android:id="@+id/dish_average_rating"
                     android:layout_gravity="center"
-                    android:textSize="22sp"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-light"
                     android:layout_marginStart="8dp"/>
             </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="22sp"
+                android:textSize="24sp"
                 android:gravity="center"
                 android:id="@+id/dish_name"
                 android:textAllCaps="true"
+                android:fontFamily="sans-serif-medium"
                 android:layout_marginBottom="10dp"/>
 
             <LinearLayout
@@ -64,15 +65,10 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/dish_type"
-                    android:textSize="18sp"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="18sp"
+                    android:textSize="20sp"
                     android:layout_marginStart="8dp"
-                    android:id="@+id/dish_weight"/>
+                    android:id="@+id/dish_weight"
+                    android:fontFamily="sans-serif-regular"/>
 
                 <View
                     android:layout_width="0dp"
@@ -82,8 +78,9 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="18sp"
+                    android:textSize="20sp"
                     android:layout_marginEnd="16dp"
+                    android:fontFamily="sans-serif-regular"
                     android:id="@+id/dish_cost"/>
             </LinearLayout>
 
@@ -92,15 +89,26 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/dish_description"
                 android:textSize="16sp"
-                android:layout_marginTop="12dp"/>
+                android:layout_marginTop="12dp"
+                android:gravity="fill"
+                android:fontFamily="sans-serif-light"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/dish_ingredients"
                 android:layout_marginTop="8dp"
-                android:textSize="16sp"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-light"
                 android:layout_marginBottom="12dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/dish_type"
+                android:textSize="16sp"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="sans-serif-light"/>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

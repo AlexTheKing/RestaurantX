@@ -1,8 +1,10 @@
 package com.example.alex.restaurantx.json;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.example.alex.restaurantx.callbacks.IResultCallback;
+import com.example.alex.restaurantx.database.models.DishModel;
 import com.example.alex.restaurantx.model.Dish;
 
 import org.json.JSONArray;
@@ -51,20 +53,22 @@ public class JsonHandler {
                     final JSONArray jsonArrayDishesOfType = rootObject.getJSONArray(pTypeOfDishes);
                     for (int dishesIndex = 0; dishesIndex < jsonArrayDishesOfType.length(); dishesIndex++) {
                         final JSONObject jsonDishObject = jsonArrayDishesOfType.getJSONObject(dishesIndex);
-                        final String name = jsonDishObject.getString("name");
-                        final int cost = jsonDishObject.getInt("cost");
-                        final String weight = jsonDishObject.getString("weight");
-                        final String description = jsonDishObject.getString("description");
-                        final int userEstimation = -1;
-                        final float averageEstimation = (float) jsonDishObject.getDouble("average_estimation");
-                        final String bitmapUrl = jsonDishObject.getString("bitmap_url");
-                        final JSONArray jsonIngredientsArray = jsonDishObject.getJSONArray("ingredients");
+                        final String name = jsonDishObject.getString(DishModel.NAME);
+                        final float cost = (float) jsonDishObject.getDouble(DishModel.COST);
+                        final String currency = jsonDishObject.getString(DishModel.CURRENCY);
+                        final String weight = jsonDishObject.getString(DishModel.WEIGHT);
+                        final String description = jsonDishObject.getString(DishModel.DESCRIPTION);
+                        final float averageEstimation = (float) jsonDishObject.getDouble(DishModel.AVERAGE_ESTIMATION);
+                        final int userEstimation = Math.round(averageEstimation);
+                        final String bitmapUrl = jsonDishObject.getString(DishModel.BITMAP_URL);
+                        final JSONArray jsonIngredientsArray = jsonDishObject.getJSONArray(DishModel.INGREDIENTS);
                         final String ingredients[] = new String[jsonIngredientsArray.length()];
                         for (int ingredientIndex = 0; ingredientIndex < jsonIngredientsArray.length(); ingredientIndex++) {
                             ingredients[ingredientIndex] = jsonIngredientsArray.getString(ingredientIndex);
                         }
                         final Dish dish = new Dish(name, cost, weight, ingredients);
                         dish.setType(pTypeOfDishes);
+                        dish.setCurrency(currency);
                         dish.setDescription(description);
                         dish.setBitmapUrl(bitmapUrl);
                         dish.getVote().setUserEstimation(userEstimation);
