@@ -9,14 +9,11 @@ import com.example.alex.restaurantx.database.annotations.dbText;
 @Table(value = "dishes")
 public class DishModel {
 
-    @dbInteger
-    @dbPrimaryKey
-    public static final String ID = "id";
-
     @dbText
     public static final String TYPE = "type";
 
     @dbText
+    @dbPrimaryKey
     public static final String NAME = "name";
 
     @dbText

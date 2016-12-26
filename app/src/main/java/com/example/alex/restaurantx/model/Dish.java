@@ -4,7 +4,6 @@ import android.content.ContentValues;
 
 import com.example.alex.restaurantx.database.DatabaseHelper;
 import com.example.alex.restaurantx.database.models.DishModel;
-import com.example.alex.restaurantx.systems.RecommenderSystem;
 
 public class Dish {
 
@@ -96,7 +95,6 @@ public class Dish {
 
     public ContentValues convert() {
         final ContentValues contentValues = new ContentValues();
-        contentValues.put(DishModel.ID, (Integer) null);
         contentValues.put(DishModel.NAME, DatabaseHelper.getSqlStringInterpret(mName));
         contentValues.put(DishModel.TYPE, DatabaseHelper.getSqlStringInterpret(mType));
         contentValues.put(DishModel.WEIGHT, DatabaseHelper.getSqlStringInterpret(mWeight));
@@ -121,12 +119,6 @@ public class Dish {
                 throw new IllegalArgumentException("pEstimation must be >= 1 and <= " + MAX_ESTIMATION);
             }
             mUserEstimation = pEstimation;
-        }
-
-        public void userSetUserEsimation(final int pEstimation) throws IllegalArgumentException {
-            setUserEstimation(pEstimation);
-            //TODO : CHECK RECOMMENDER SYSTEM USING
-            RecommenderSystem.getInstance().updateVoteForDish(Dish.this);
         }
 
         public int getUserEstimation() {

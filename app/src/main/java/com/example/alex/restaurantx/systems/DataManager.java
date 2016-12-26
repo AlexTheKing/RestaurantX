@@ -5,31 +5,27 @@ import android.database.Cursor;
 import android.support.annotation.Nullable;
 
 import com.example.alex.restaurantx.callbacks.IResultCallback;
+import com.example.alex.restaurantx.constants.Constants;
 import com.example.alex.restaurantx.database.DatabaseHelper;
 import com.example.alex.restaurantx.database.models.DishModel;
-import com.example.alex.restaurantx.database.models.IngredientIndexModel;
 import com.example.alex.restaurantx.holders.ContextHolder;
 import com.example.alex.restaurantx.model.Dish;
-import com.example.alex.restaurantx.model.IngredientIndex;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class DataManager {
 
     public static final String UNIVERSAL_QUANTIFICATOR = "*";
+    private final DatabaseHelper mHelper;
 
-    public void upgradeDishesWithType(final List<Dish> pDishes, final String pType) {
-        final DatabaseHelper helper = DatabaseHelper.getInstance(ContextHolder.getInstance().getContext(), DatabaseHelper.CURRENT_VERSION);
-        helper.delete(DishModel.class, null, DishModel.TYPE + " = ?", DatabaseHelper.getSqlStringInterpret(pType));
-        saveDishes(pDishes);
+    public DataManager(final DatabaseHelper pHelper){
+        mHelper = pHelper;
     }
 
     public void loadDishes(final IResultCallback<List<Dish>> pCallback, final String pWhereClause, final String... pArgs) {
         final List<Dish> dishes = new ArrayList<>();
-        final DatabaseHelper helper = DatabaseHelper.getInstance(ContextHolder.getInstance().getContext(), DatabaseHelper.CURRENT_VERSION);
-        helper.query(new IResultCallback<Cursor>() {
+        mHelper.query(new IResultCallback<Cursor>() {
             @Override
             public void onSuccess(final Cursor pCursor) {
                 final int indexNameColumn = pCursor.getColumnIndex(DishModel.NAME);
@@ -78,9 +74,21 @@ public class DataManager {
     }
 
     public void saveDishes(final List<Dish> pDishes, @Nullable final IResultCallback<Integer> pCallback) {
-        final DatabaseHelper helper = DatabaseHelper.getInstance(ContextHolder.getInstance().getContext(), DatabaseHelper.CURRENT_VERSION);
         final List<ContentValues> contentValuesList = getContentValuesListDishes(pDishes);
-        helper.bulkInsert(DishModel.class, contentValuesList, pCallback);
+        mHelper.bulkInsert(DishModel.class, contentValuesList, pCallback);
+    }
+
+    public void resaveDishes(final List<Dish> pDishes, @Nullable final IResultCallback<Long> pCallback) {
+        final List<ContentValues> insertValuesList = getContentValuesListDishes(pDishes);
+        final List<ContentValues> updateValuesList = getContentValuesListDishes(pDishes);
+        for (ContentValues updateValues : updateValuesList) {
+            updateValues.remove(DishModel.USER_ESTIMATION);
+        }
+        String whereClause = DishModel.NAME + " = ?";
+        int length = insertValuesList.size();
+        for (int i = 0; i < length; i++) {
+            mHelper.insertOrUpdate(DishModel.class, insertValuesList.get(i), updateValuesList.get(i), whereClause, new String[]{updateValuesList.get(i).getAsString(DishModel.NAME)}, pCallback);
+        }
     }
 
     private List<ContentValues> getContentValuesListDishes(final List<Dish> pDishes) {
@@ -91,35 +99,7 @@ public class DataManager {
         return contentValuesList;
     }
 
-    public void saveIngredientsIndexes(final IngredientIndex pIngredientIndex) {
-        //TODO : CHECK SAVING INDEXES IN DB
-        final DatabaseHelper helper = DatabaseHelper.getInstance(ContextHolder.getInstance().getContext(), DatabaseHelper.CURRENT_VERSION);
-        helper.bulkInsert(IngredientIndexModel.class, pIngredientIndex.convertToContentValues(), null);
-    }
-
-    public void loadIngredientsIndexes(final IResultCallback<HashMap<String, Integer>> pCallback) {
-        //TODO : CHECK LOADING INDEXES FROM DB
-        final DatabaseHelper helper = DatabaseHelper.getInstance(ContextHolder.getInstance().getContext(), DatabaseHelper.CURRENT_VERSION);
-        helper.query(new IResultCallback<Cursor>() {
-            @Override
-            public void onSuccess(final Cursor pResult) {
-                final int indexIngredientColumn = pResult.getColumnIndex(IngredientIndexModel.INGREDIENT);
-                final int indexWeightColumn = pResult.getColumnIndex(IngredientIndexModel.WEIGHT);
-                final HashMap<String, Integer> indexes = new HashMap<>();
-                try {
-                    while (pResult.moveToNext()) {
-                        indexes.put(pResult.getString(indexIngredientColumn), pResult.getInt(indexWeightColumn));
-                    }
-                } finally {
-                    pResult.close();
-                }
-                pCallback.onSuccess(indexes);
-            }
-
-            @Override
-            public void onError(final Exception e) {
-                pCallback.onError(e);
-            }
-        }, UNIVERSAL_QUANTIFICATOR, IngredientIndexModel.class, "");
+    public void updateDish(final Dish pDish, final IResultCallback<Integer> pCallback) {
+        mHelper.update(DishModel.class, pDish.convert(), DishModel.NAME + " = ?", new String[]{DatabaseHelper.getSqlStringInterpret(pDish.getName())}, pCallback);
     }
 }

@@ -10,6 +10,7 @@ import android.util.LruCache;
 import android.widget.ImageView;
 
 import com.example.alex.restaurantx.callbacks.IResultCallback;
+import com.example.alex.restaurantx.constants.Constants;
 import com.example.alex.restaurantx.network.HttpClient;
 import com.example.alex.restaurantx.network.Request;
 import com.example.alex.restaurantx.threads.IProgressCallback;
@@ -29,21 +30,20 @@ public class ImageLoader {
     private final ThreadManager mThreadManagerInstance;
     private final LruCache<String, Bitmap> mLruCache;
     private final Stack<PriorityModel> mDownloadPriorities;
-    private final int mDefaultCacheSize = 12 * 1024 * 1024;
     private final Object mLockObj = new Object();
-    private final String TAG = "IMAGELOADER";
+    private final String TAG = "ImageLoader";
 
     private ImageLoader() {
         mThreadManagerInstance = ThreadManager.getInstance();
         mDownloadPriorities = new Stack<>();
         mClient = new HttpClient();
         long size;
-        if (Runtime.getRuntime().maxMemory() / 4 > mDefaultCacheSize) {
-            size = mDefaultCacheSize;
+        if (Runtime.getRuntime().maxMemory() / 4 > Constants.ImageLoaderSettings.DEFAULT_MEMORY_CACHE_SIZE) {
+            size = Constants.ImageLoaderSettings.DEFAULT_MEMORY_CACHE_SIZE;
         } else {
             size = Runtime.getRuntime().maxMemory() / 4;
         }
-        Log.d(TAG, "ImageLoader: MEMORY ALLOCATED FOR LRU CACHE: " + size);
+        Log.d(TAG, "MEMORY ALLOCATED FOR LRU CACHE: " + size);
         mLruCache = new LruCache<String, Bitmap>(((int) size)) {
 
             @Override
@@ -65,7 +65,7 @@ public class ImageLoader {
         if (findModel(pUrl) != -1) {
             risePriority(pUrl);
             recalculatePriorities();
-            Log.d(TAG, "downloadAndDraw: UP PRIORITY FOR " + pUrl);
+            Log.d(TAG, "PRIORITY UP FOR " + pUrl);
             return;
         }
         pView.setTag(pUrl);
@@ -73,9 +73,9 @@ public class ImageLoader {
         synchronized (mLockObj) {
             cachedBitmap = mLruCache.get(pUrl);
         }
-        Log.d(TAG, "downloadAndDraw: CACHED: " + (cachedBitmap == null ? "NO" : "YES") + " " + pUrl);
+        Log.d(TAG, "CACHED: " + (cachedBitmap == null ? "NO" : "YES") + " " + pUrl);
         if (cachedBitmap != null && pView.getTag() == pUrl) {
-            Log.d(TAG, "downloadAndDraw: FROM LRU CACHE " + pUrl);
+            Log.d(TAG, "TAKE UP FROM LRU CACHE " + pUrl);
             if (pArgs.length != 0) {
                 final Bitmap resizedBitmap = Bitmap.createScaledBitmap(cachedBitmap, pArgs[0], pArgs[1], true);
                 pView.setImageBitmap(resizedBitmap);
@@ -100,13 +100,13 @@ public class ImageLoader {
                     inputStream = connection.getInputStream();
                     bitmap = BitmapFactory.decodeStream(inputStream);
                 } catch (final Exception e) {
-                    Log.e(TAG, "download: ", e);
+                    Log.e(TAG, "FAILURE: ", e);
                 } finally {
                     if (inputStream != null) {
                         try {
                             inputStream.close();
                         } catch (final IOException e) {
-                            Log.e(TAG, "download: inputStream did not closed: ", e);
+                            Log.e(TAG, "FAILURE: inputStream did not closed: ", e);
                         }
                     }
                     if (connection != null) {
@@ -116,50 +116,50 @@ public class ImageLoader {
                 return bitmap;
             }
         },
-                pUrl,
-                null,
-                new IResultCallback<Bitmap>() {
+        pUrl,
+        null,
+        new IResultCallback<Bitmap>() {
 
-                    private void cleanStack() {
-                        synchronized (mLockObj) {
-                            if (findModel(pUrl) != -1) {
-                                mDownloadPriorities.remove(findModel(pUrl));
-                            }
+            private void cleanStack() {
+                synchronized (mLockObj) {
+                    if (findModel(pUrl) != -1) {
+                        mDownloadPriorities.remove(findModel(pUrl));
+                    }
+                }
+                recalculatePriorities();
+            }
+
+            @Override
+            public void onSuccess(final Bitmap pBitmap) {
+                if (pBitmap != null) {
+                    Log.d(TAG, "SUCCESS: DOWNLOADED " + pUrl);
+                    Log.d(TAG, "SUCCESS: LAY IN LRU");
+                    synchronized (mLockObj) {
+                        if (!mLruCache.snapshot().containsKey(pUrl)) {
+                            mLruCache.put(pUrl, pBitmap);
                         }
-                        recalculatePriorities();
                     }
-
-                    @Override
-                    public void onSuccess(final Bitmap pBitmap) {
-                        if (pBitmap != null) {
-                            Log.d(TAG, "onSuccess: DOWNLOADED " + pUrl);
-                            Log.d(TAG, "onSuccess: LAY IN LRU");
-                            synchronized (mLockObj) {
-                                if (!mLruCache.snapshot().containsKey(pUrl)) {
-                                    mLruCache.put(pUrl, pBitmap);
-                                }
-                            }
-                            if (pView.getTag() == pUrl) {
-                                if (pArgs.length != 0) {
-                                    final Bitmap resizedBitmap = Bitmap.createScaledBitmap(pBitmap, pArgs[0], pArgs[1], true);
-                                    pView.setImageBitmap(resizedBitmap);
-                                } else {
-                                    pView.setImageBitmap(pBitmap);
-                                }
-                                if (pCallback != null) {
-                                    pCallback.onDownload(pBitmap);
-                                }
-                            }
+                    if (pView.getTag() == pUrl) {
+                        if (pArgs.length != 0) {
+                            final Bitmap resizedBitmap = Bitmap.createScaledBitmap(pBitmap, pArgs[0], pArgs[1], true);
+                            pView.setImageBitmap(resizedBitmap);
+                        } else {
+                            pView.setImageBitmap(pBitmap);
                         }
-                        cleanStack();
+                        if (pCallback != null) {
+                            pCallback.onDownload(pBitmap);
+                        }
                     }
+                }
+                cleanStack();
+            }
 
-                    @Override
-                    public void onError(final Exception e) {
-                        cleanStack();
-                        Log.e(TAG, "onError: ", e);
-                    }
-                });
+            @Override
+            public void onError(final Exception e) {
+                cleanStack();
+                Log.e(TAG, "FAILURE: ", e);
+            }
+        });
         final PriorityModel model = new PriorityModel(priorityRunnable);
         model.setUrl(pUrl);
         model.setPriority(Thread.MAX_PRIORITY);

@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import com.example.alex.restaurantx.callbacks.IResultCallback;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -37,7 +38,11 @@ public class HttpClient {
             return stringBuilder.toString();
         } finally {
             if (inputStream != null) {
-                inputStream.close();
+                try {
+                    inputStream.close();
+                } catch (IOException ex){
+                    ex.printStackTrace();
+                }
             }
             if (connection != null) {
                 connection.disconnect();

@@ -1,19 +1,14 @@
 package com.example.alex.restaurantx.service;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.NotificationCompat;
-import android.support.v7.app.NotificationCompat.Builder;
-import android.util.Log;
-import android.widget.Toast;
+import android.test.mock.MockApplication;
 
+import com.example.alex.restaurantx.CoreApplication;
 import com.example.alex.restaurantx.api.ApiManager;
 import com.example.alex.restaurantx.callbacks.IResultCallback;
 import com.example.alex.restaurantx.constants.Constants;
@@ -26,10 +21,7 @@ import java.util.List;
 
 public class UpdateService extends Service {
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-    }
+    private boolean mIsStarted = false;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -43,20 +35,20 @@ public class UpdateService extends Service {
         return null;
     }
 
-    private void execute(){
-        final ApiManager apiManager = new ApiManager();
-        final JsonHandler jsonHandler = new JsonHandler();
+    private void execute() {
+        if (mIsStarted) return;
+        mIsStarted = true;
+        final CoreApplication application = ((CoreApplication) getApplication());
         final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
         final NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         final IResultCallback<List<Dish>> menuCallback = new IResultCallback<List<Dish>>() {
             @Override
             public void onSuccess(List<Dish> pDishes) {
-                DataManager dataManager = new DataManager();
-                dataManager.saveDishes(pDishes, new IResultCallback<Integer>() {
+                DataManager dataManager = new DataManager(application.mDatabaseHelper);
+                dataManager.resaveDishes(pDishes, new IResultCallback<Long>() {
                     @Override
-                    public void onSuccess(Integer pInteger) {
+                    public void onSuccess(Long pLong) {
                         //TODO : IMPLEMENT NOTIFICATION
-                        Toast.makeText(UpdateService.this, "Menu updated", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(Constants.INTENT_SERVICE_UPDATE_ACTION);
                         intent.putExtra(Constants.BROADCAST_UPDATE_MESSAGE, true);
                         broadcastManager.sendBroadcast(intent);
@@ -88,10 +80,10 @@ public class UpdateService extends Service {
             @Override
             public void onSuccess(List<String> pTypes) {
                 for (final String type : pTypes) {
-                    apiManager.getMenuMethod(Constants.BASE_URL, new IResultCallback<String>() {
+                    application.mApiManager.getMenuMethod(new IResultCallback<String>() {
                         @Override
                         public void onSuccess(String pResponse) {
-                            jsonHandler.parseMenu(pResponse, type, menuCallback);
+                            application.mJsonHandler.parseMenu(pResponse, type, menuCallback);
                         }
 
                         @Override
@@ -115,10 +107,10 @@ public class UpdateService extends Service {
                 stopSelf();
             }
         };
-        apiManager.getTypesMethod(Constants.BASE_URL, new IResultCallback<String>() {
+        application.mApiManager.getTypesMethod(new IResultCallback<String>() {
             @Override
             public void onSuccess(final String pResponse) {
-                jsonHandler.parseTypesOfDishes(pResponse, typesCallback);
+                application.mJsonHandler.parseTypesOfDishes(pResponse, typesCallback);
             }
 
             @Override

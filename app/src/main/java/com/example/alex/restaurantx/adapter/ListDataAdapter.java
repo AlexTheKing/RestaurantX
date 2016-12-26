@@ -4,9 +4,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-
-import com.example.alex.restaurantx.R;
 
 import java.util.List;
 
@@ -36,15 +33,5 @@ public class ListDataAdapter<Holder extends RecyclerView.ViewHolder> extends Rec
     @Override
     public int getItemCount() {
         return mData.size();
-    }
-
-    static class DataHolder extends RecyclerView.ViewHolder {
-
-        final TextView mName;
-
-        DataHolder(final View pView) {
-            super(pView);
-            mName = ((TextView) pView.findViewById(R.id.typelist_item_name));
-        }
     }
 }

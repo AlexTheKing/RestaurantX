@@ -4,9 +4,11 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.alex.restaurantx.callbacks.IResultCallback;
+import com.example.alex.restaurantx.constants.Constants;
 import com.example.alex.restaurantx.database.models.DishModel;
 import com.example.alex.restaurantx.model.Dish;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,14 +18,25 @@ import java.util.List;
 
 public class JsonHandler {
 
-    public void parseTypesOfDishes(final String pJsonString, final IResultCallback<List<String>> pCallback) {
+    private static JsonHandler sJsonHandler;
+
+    public static JsonHandler getInstance(){
+        if(sJsonHandler == null){
+            sJsonHandler = new JsonHandler();
+        }
+        return sJsonHandler;
+    }
+
+    private JsonHandler() { }
+
+    public void parseTypesOfDishes(final String pJsonString, @NotNull final IResultCallback<List<String>> pCallback) {
         new AsyncTask<String, Void, List<String>>() {
             @Override
             protected List<String> doInBackground(final String... pJsonStrings) {
                 try {
                     final List<String> types = new ArrayList<>();
-                    final JSONObject rootObject = new JSONObject(pJsonStrings[0]).getJSONObject("response");
-                    final JSONArray typesArray = rootObject.getJSONArray("types");
+                    final JSONObject rootObject = new JSONObject(pJsonStrings[0]).getJSONObject(Constants.JsonHandlerSettigns.RESPONSE);
+                    final JSONArray typesArray = rootObject.getJSONArray(Constants.JsonHandlerSettigns.TYPES);
                     for (int index = 0; index < typesArray.length(); index++) {
                         types.add(typesArray.getString(index));
                     }
@@ -43,13 +56,13 @@ public class JsonHandler {
         }.execute(pJsonString);
     }
 
-    public void parseMenu(final String pJsonString, final String pTypeOfDishes, final IResultCallback<List<Dish>> pCallback) {
+    public void parseMenu(final String pJsonString, final String pTypeOfDishes, @NotNull final IResultCallback<List<Dish>> pCallback) {
         new AsyncTask<String, Void, List<Dish>>() {
             @Override
             protected List<Dish> doInBackground(final String... pJsonStrings) {
                 try {
                     final List<Dish> menu = new ArrayList<>();
-                    final JSONObject rootObject = new JSONObject(pJsonStrings[0]).getJSONObject("response");
+                    final JSONObject rootObject = new JSONObject(pJsonStrings[0]).getJSONObject(Constants.JsonHandlerSettigns.RESPONSE);
                     final JSONArray jsonArrayDishesOfType = rootObject.getJSONArray(pTypeOfDishes);
                     for (int dishesIndex = 0; dishesIndex < jsonArrayDishesOfType.length(); dishesIndex++) {
                         final JSONObject jsonDishObject = jsonArrayDishesOfType.getJSONObject(dishesIndex);
@@ -86,6 +99,33 @@ public class JsonHandler {
             protected void onPostExecute(final List<Dish> pMenu) {
                 if (pMenu != null) {
                     pCallback.onSuccess(pMenu);
+                }
+            }
+        }.execute(pJsonString);
+    }
+
+    public void parseComments(final String pJsonString, @NotNull final IResultCallback<List<String>> pCallback) {
+        new AsyncTask<String, Void, List<String>>() {
+            @Override
+            protected List<String> doInBackground(final String... pJsonStrings) {
+                try {
+                    final List<String> comments = new ArrayList<>();
+                    final JSONObject rootObject = new JSONObject(pJsonStrings[0]).getJSONObject(Constants.JsonHandlerSettigns.RESPONSE);
+                    final JSONArray commentsArray = rootObject.getJSONArray(Constants.JsonHandlerSettigns.COMMENTS);
+                    for (int index = 0; index < commentsArray.length(); index++) {
+                        comments.add(commentsArray.getString(index));
+                    }
+                    return comments;
+                } catch (final JSONException e) {
+                    pCallback.onError(e);
+                    return null;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(final List<String> pComments) {
+                if (pComments != null) {
+                    pCallback.onSuccess(pComments);
                 }
             }
         }.execute(pJsonString);

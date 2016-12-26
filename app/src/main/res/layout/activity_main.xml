@@ -7,59 +7,85 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:app="http://schemas.android.com/apk/res-auto"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:orientation="vertical">
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                      xmlns:app="http://schemas.android.com/apk/res-auto"
-                      android:id="@+id/activity_main"
-                      android:layout_width="match_parent"
-                      android:layout_height="match_parent"
-                      android:orientation="vertical">
+        <android.support.v7.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/toolbar"
+            android:background="?attr/colorPrimary"
+            app:titleTextColor="@android:color/white">
+        </android.support.v7.widget.Toolbar>
 
-            <android.support.v7.widget.Toolbar
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin">
+
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/toolbar"
-                android:background="?attr/colorPrimary"
-                app:titleTextColor="@android:color/white">
-            </android.support.v7.widget.Toolbar>
+                android:text="@string/menu"
+                android:textSize="24sp"
+                android:fontFamily="sans-serif-regular"
+                android:textColor="@android:color/black"
+                android:gravity="center"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/spinner"
+                android:layout_gravity="center"
+                android:src="@drawable/spinner"
+                android:contentDescription="@string/spinner"
+                android:visibility="gone"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:padding="2dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/activity_type_list_recyclerview"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:paddingBottom="@dimen/activity_vertical_margin"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:paddingTop="@dimen/activity_vertical_margin">
+                android:id="@android:id/empty"
+                android:visibility="gone"
+                android:orientation="vertical">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.3"/>
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/menu"
-                    android:textSize="24sp"
-                    android:fontFamily="sans-serif-regular"
-                    android:textColor="@android:color/black"
-                    android:gravity="center"/>
+                    android:textStyle="normal"
+                    android:fontFamily="sans-serif-light"
+                    android:textSize="18sp"
+                    android:textColor="@color/colorDarkestGrey"
+                    android:layout_gravity="center"
+                    android:text="@string/please_refresh"
+                    android:gravity="center"
+                    android:drawableTop="@mipmap/wedding_reception_pink"/>
 
-                <android.support.v7.widget.RecyclerView
-                    android:padding="2dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/typelist"/>
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.5"/>
             </LinearLayout>
         </LinearLayout>
-    </FrameLayout>
+    </LinearLayout>
 
-    <android.support.design.widget.NavigationView
-        android:id="@+id/nav_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        app:menu="@menu/nav_menu"
-        app:itemIconTint="@android:color/black"
-        app:headerLayout="@layout/nav_header"
-        android:layout_gravity="start"/>
+    <include layout="@layout/nav_view"/>
 
 </android.support.v4.widget.DrawerLayout>

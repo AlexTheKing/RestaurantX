@@ -13,6 +13,15 @@
         <item name="colorPrimaryDark">@color/colorDarkRed</item>
         <item name="colorAccent">@color/colorLightGreen</item>
         <item name="android:textColorSecondary">@android:color/white</item>
+        <item name="actionMenuTextColor">@android:color/black</item>
+    </style>
+
+    <style name="EditTextStyle">
+        <item name="colorControlNormal">@color/colorLightGreen</item>
+    </style>
+
+    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@drawable/splashscreen</item>
     </style>
 
 </resources>

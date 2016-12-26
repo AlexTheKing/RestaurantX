@@ -16,10 +16,4 @@ public class ExampleUnitTest {
         assertEquals(4, 2 + 2);
     }
 
-    @Test
-    public void lol() {
-        String s = '"' + "abcdefg" + '"';
-        System.out.println(s);
-        System.out.println(s.substring(1, s.length() - 1));
-    }
 }

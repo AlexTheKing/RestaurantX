@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.example.alex.restaurantx.callbacks.IResultCallback;
 import com.example.alex.restaurantx.database.annotations.Table;
@@ -32,13 +31,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String mDatabaseName = "xrestdb.sqlite";
     private static final String SQL_TABLE_CREATE_TEMPLATE = "CREATE TABLE IF NOT EXISTS %s (%s);";
     private static final String SQL_TABLE_CREATE_FIELD_TEMPLATE = "%s %s%s";
-    public static final int CURRENT_VERSION = 1;
 
     private DatabaseHelper(final Context pContext, final int pVersion) {
         super(pContext, mDatabaseName, null, pVersion);
         // TODO : REMOVE DELETING DATABASE CODE LINE
-        ContextHolder.getInstance().getContext().deleteDatabase(mDatabaseName);
-        Log.d("MYDBHELPER", "DatabaseHelper: prev db deleted");
+        pContext.deleteDatabase(mDatabaseName);
         getWritableDatabase();
     }
 
@@ -49,6 +46,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return sHelper;
     }
 
+    @SuppressWarnings("unused")
     @Nullable
     public static String getTableName(final AnnotatedElement pModel) {
         final Table table = pModel.getAnnotation(Table.class);
@@ -59,16 +57,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    @SuppressWarnings("unused")
     @Nullable
-    public static String getTableCreateQuery(final Class<?> pModel) {
+    private static String getTableCreateQuery(final Class<?> pModel) {
         final Table table = pModel.getAnnotation(Table.class);
         if (table != null) {
             try {
                 final String name = table.value();
                 final StringBuilder builder = new StringBuilder();
                 final Field[] fields = pModel.getFields();
-                for (int i = 0; i < fields.length; i++) {
-                    final Annotation[] annotations = fields[i].getAnnotations();
+                for (Field field : fields) {
+                    final Annotation[] annotations = field.getAnnotations();
                     String type = null;
                     String additionalKeys = "";
                     for (Annotation annotation : annotations) {
@@ -85,7 +84,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         }
                     }
                     if (type != null) {
-                        final String value = (String) fields[i].get(null);
+                        final String value = (String) field.get(null);
                         builder.append(String.format(Locale.US, SQL_TABLE_CREATE_FIELD_TEMPLATE, value, type, additionalKeys));
                         builder.append(",");
                     }
@@ -100,30 +99,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    @SuppressWarnings("unused")
     public static String getSqlStringInterpret(final String pString) {
         return '"' + pString + '"';
     }
 
+    @SuppressWarnings("unused")
     public static String getUsualStringInterpret(final String pSqlString) {
         return pSqlString.substring(1, pSqlString.length() - 1);
     }
 
+    @SuppressWarnings("unused")
     @Override
     public void onCreate(final SQLiteDatabase pDatabase) {
         for (final Class<?> clazz : TablesList.MODELS) {
             final String sql = getTableCreateQuery(clazz);
             if (sql != null) {
-                Log.d("MYDBHELPER", "onCreate: " + sql);
                 pDatabase.execSQL(sql);
             }
         }
     }
 
+    @SuppressWarnings("unused")
     @Override
     public void onUpgrade(final SQLiteDatabase pDatabase, final int pOldVersion, final int pNewVersion) {
 
     }
 
+    @SuppressWarnings("unused")
     public synchronized void query(@NonNull final IResultCallback<Cursor> pCallback, final String pSqlQuery, final AnnotatedElement pModel, final String pSqlCondition, final String... pArgs) {
         new AsyncTask<Void, Void, Cursor>() {
             @Override
@@ -144,7 +147,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }.execute();
     }
 
-    public synchronized void insert(final Class<?> pModel, final ContentValues pValues, @Nullable final IResultCallback<Long> pCallback) {
+    @SuppressWarnings("unused")
+    public synchronized void insert(final AnnotatedElement pModel, final ContentValues pValues, @Nullable final IResultCallback<Long> pCallback) {
         new AsyncTask<Void, Void, Long>() {
             @Override
             protected Long doInBackground(final Void... params) {
@@ -180,7 +184,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }.execute();
     }
 
-    public synchronized void bulkInsert(final Class<?> pModel, final List<ContentValues> pValuesList, @Nullable final IResultCallback<Integer> pCallback) {
+    @SuppressWarnings("unused")
+    public synchronized void bulkInsert(final AnnotatedElement pModel, final List<ContentValues> pValuesList, @Nullable final IResultCallback<Integer> pCallback) {
         new AsyncTask<Void, Void, Integer>() {
             @Override
             protected Integer doInBackground(final Void... params) {
@@ -219,7 +224,85 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }.execute();
     }
 
-    public synchronized void delete(final Class<?> pModel, @Nullable final IResultCallback<Integer> pCallback, final String pSql, final String... pArgs) {
+    @SuppressWarnings("unused")
+    public synchronized void insertOrUpdate(final AnnotatedElement pModel, final ContentValues pInsertValues, final ContentValues pUpdateValues, final String pWhereClause, final String[] pWhereArgs, @Nullable final IResultCallback<Long> pCallback) {
+        new AsyncTask<Void, Void, Long>() {
+            @Override
+            protected Long doInBackground(final Void... params) {
+                final String name = getTableName(pModel);
+                if (name != null) {
+                    final SQLiteDatabase database = getWritableDatabase();
+                    long id;
+                    try {
+                        database.beginTransaction();
+                        id = database.insertWithOnConflict(name, null, pInsertValues, SQLiteDatabase.CONFLICT_IGNORE);
+                        if (id == -1) {
+                            database.update(name, pUpdateValues, pWhereClause, pWhereArgs);
+                        }
+                        database.setTransactionSuccessful();
+                    } finally {
+                        database.endTransaction();
+                    }
+                    return id;
+                } else {
+                    final RuntimeException exception = new RuntimeException("No such table exists");
+                    if (pCallback != null) {
+                        pCallback.onError(exception);
+                    } else {
+                        throw exception;
+                    }
+                    return -1L;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(final Long pLong) {
+                if (pCallback != null) {
+                    pCallback.onSuccess(pLong);
+                }
+            }
+        }.execute();
+    }
+
+    @SuppressWarnings("unused")
+    public synchronized void update(final AnnotatedElement pModel, final ContentValues pUpdateValues, final String pWhereClause, final String[] pWhereArgs, @Nullable final IResultCallback<Integer> pCallback) {
+        new AsyncTask<Void, Void, Integer>() {
+            @Override
+            protected Integer doInBackground(final Void... params) {
+                final String name = getTableName(pModel);
+                if (name != null) {
+                    final SQLiteDatabase database = getWritableDatabase();
+                    int result;
+                    try {
+                        database.beginTransaction();
+                        result = database.update(name, pUpdateValues, pWhereClause, pWhereArgs);
+                        database.setTransactionSuccessful();
+                    } finally {
+                        database.endTransaction();
+                    }
+                    return result;
+                } else {
+                    final RuntimeException exception = new RuntimeException("No such table exists");
+                    if (pCallback != null) {
+                        pCallback.onError(exception);
+                    } else {
+                        throw exception;
+                    }
+                    return -1;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(final Integer pInteger) {
+                if (pCallback != null) {
+                    pCallback.onSuccess(pInteger);
+                }
+            }
+        }.execute();
+    }
+
+    @SuppressWarnings("unused")
+    public synchronized void delete(final AnnotatedElement pModel, final String pSqlQuery, @Nullable final IResultCallback<Integer> pCallback, final String... pArgs) {
         new AsyncTask<Void, Void, Integer>() {
             @Override
             protected Integer doInBackground(final Void... params) {
@@ -229,7 +312,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     int count = 0;
                     try {
                         database.beginTransaction();
-                        count = database.delete(name, pSql, pArgs);
+                        count = database.delete(name, pSqlQuery, pArgs);
                         database.setTransactionSuccessful();
                     } finally {
                         database.endTransaction();
@@ -251,6 +334,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 if (pCallback != null) {
                     pCallback.onSuccess(pInteger);
                 }
+            }
+        }.execute();
+    }
+
+    @SuppressWarnings("unused")
+    public synchronized void dropTable(final AnnotatedElement pModel) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(final Void... params) {
+                final SQLiteDatabase database = getReadableDatabase();
+                String sql = "DROP TABLE " + getTableName(pModel) + ";";
+                database.execSQL(sql);
+                return null;
+            }
+        }.execute();
+    }
+
+    @SuppressWarnings("unused")
+    public synchronized void truncateTable(final AnnotatedElement pModel) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(final Void... params) {
+                final SQLiteDatabase database = getReadableDatabase();
+                String deleteSql = "DELETE FROM " + getTableName(pModel) + ";";
+                String vacuumSql = "VACUUM;";
+                database.execSQL(deleteSql);
+                database.execSQL(vacuumSql);
+                return null;
             }
         }.execute();
     }

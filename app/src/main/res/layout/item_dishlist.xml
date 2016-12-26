@@ -13,14 +13,15 @@
         android:padding="8dp">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_weight="1">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/dishlist_item_name"
+                android:id="@+id/dish_list_item_name"
                 android:textColor="@android:color/black"
                 android:textSize="18sp"
                 android:fontFamily="sans-serif-light"/>
@@ -28,7 +29,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/dishlist_item_prohibited"
+                android:id="@+id/dish_list_item_prohibited"
                 android:textColor="@color/colorDarkRed"
                 android:textSize="16sp"
                 android:fontFamily="sans-serif-light"/>
@@ -37,20 +38,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
-                android:id="@+id/dishlist_item_cost"
+                android:id="@+id/dish_list_item_cost"
                 android:fontFamily="sans-serif-regular"/>
         </LinearLayout>
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
 
         <RatingBar
             android:layout_marginStart="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/dishlist_item_average_rating"
+            android:id="@+id/dish_list_item_average_rating"
             style="?android:attr/ratingBarStyleSmall"
             android:layout_gravity="center"
             android:numStars="5"
