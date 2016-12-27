@@ -37,7 +37,7 @@ public class NavigationViewListener implements NavigationView.OnNavigationItemSe
                 result = true;
                 break;
             case R.id.nav_help:
-                Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(mContext.getString(R.string.github_repo_readme)));
+                Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(mContext.getString(R.string.github_repo_wiki)));
                 mContext.startActivity(helpIntent);
                 result = true;
                 break;
