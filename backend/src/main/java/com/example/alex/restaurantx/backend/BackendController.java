@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-class BackendController {
+public class BackendController {
 
     @RequestMapping("/api/types")
     public String getTypes() {
