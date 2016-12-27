@@ -1,32 +1,32 @@
 <resources>
-    <string name="app_name">RestaurantX</string>
-    <string name="dish_photo_description">Dish photo</string>
+    <string name="app_name" translatable="false">RestaurantX</string>
+    <string name="dish_photo_description" translatable="false">Dish photo</string>
     <string name="ingredients_string">"Ingredients: %s"</string>
     <string name="menu">Menu</string>
     <string name="action_refresh">Refresh menu</string>
-    <string name="navigation_drawer_open">drawer opening</string>
-    <string name="navigation_drawer_close">drawer closing</string>
+    <string name="navigation_drawer_open" translatable="false">drawer opening</string>
+    <string name="navigation_drawer_close" translatable="false">drawer closing</string>
     <string name="settings">Allergic ingredients</string>
     <string name="help">Help</string>
-    <string name="open_source">Open source</string>
+    <string name="open_source" translatable="false">Open source</string>
     <string name="about">About</string>
     <string name="about_info">RestaurantX\nAlexander Beytuk\nFor EPAM training\n2016</string>
-    <string name="github_repo">https://github.com/AlexTheKing/final-project</string>
+    <string name="github_repo" translatable="false">https://github.com/AlexTheKing/final-project</string>
     <string name="manage_allergic_ingredients">Manage allergic ingredients</string>
-    <string name="github_repo_wiki">https://github.com/AlexTheKing/final-project/wiki</string>
+    <string name="github_repo_wiki" translatable="false">https://github.com/AlexTheKing/final-project/wiki</string>
     <string name="contains">"Contains: %s"</string>
     <string name="search">Search</string>
     <string name="problem_occurred">Problem occurred</string>
     <string name="checkout_internet">Checkout your Internet connection or try later</string>
-    <string name="spinner">spinner</string>
+    <string name="spinner" translatable="false">spinner</string>
     <string name="problem_but_sent">A problem with saving your rating occurred, but it was sent</string>
     <string name="home">Home</string>
     <string name="please_refresh">Whooy, no elements here.\nPlease, refresh menu.</string>
     <string name="add_comment_hint">Type a comment to the dish</string>
-    <string name="top_quote">“</string>
-    <string name="bottom_quote">„</string>
+    <string name="top_quote" translatable="false">“</string>
+    <string name="bottom_quote" translatable="false">„</string>
     <string name="related_comments">See related comments:</string>
-    <string name="fisheye">fisheye</string>
-    <string name="clean_cache">Error with database occurred, please clean application cache</string>
+    <string name="fisheye" translatable="false">fisheye</string>
+    <string name="clean_cache">Error with database occurred, please clean application\'s cache</string>
     <string name="updating">Updating…</string>
 </resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about">Über Applikation</string>
+    <string name="about_info">RestaurantX Alexander Beytuk Für EPAM Programmierenkurs 2016</string>
+    <string name="action_refresh">Erneuern Menü</string>
+    <string name="add_comment_hint">Schreiben Sie der Kommentar zum Gericht</string>
+    <string name="checkout_internet">Überprüfen Ihre Internet Verbindung oder probieren Sie es später</string>
+    <string name="clean_cache">Fehler hat mit Datenbank aufgetreten, bitte räumen Sie den Anwendung Cache auf</string>
+    <string name="contains">\"Enthaltet: %s\"</string>
+    <string name="help">Hilfe</string>
+    <string name="home">Hauptmenü</string>
+    <string name="ingredients_string">\"Zutaten: %s\"</string>
+    <string name="manage_allergic_ingredients">Verwalten allergische Zutaten</string>
+    <string name="menu">Menü</string>
+    <string name="open_source"></string>
+    <string name="please_refresh">Oje, hier sind keine Elemente</string>
+    <string name="problem_but_sent">Ein Problem hat mit Ihrer Bewertung aufgetreten, aber sie hat gesendet</string>
+    <string name="problem_occurred">Problem hat aufgetreten</string>
+    <string name="related_comments">Gucken Sie für andere Bewertungen</string>
+    <string name="search">Suche</string>
+    <string name="settings">Allergische Zutaten</string>
+    <string name="updating">Aktualisieren…</string>
+</resources>
