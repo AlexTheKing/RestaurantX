@@ -13,12 +13,12 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.test.mock.MockApplication;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -99,6 +99,9 @@ public class DishListActivity extends AppCompatActivity {
     private void upgradeRecyclerView(String templateQuery) {
         final String selectQuery = DishModel.NAME + ", " + DishModel.COST + ", " + DishModel.CURRENCY + ", " + DishModel.AVERAGE_ESTIMATION + ", " + DishModel.INGREDIENTS;
         String selectCondition = DishModel.TYPE + " = ?";
+        final AlertDialog.Builder dlgAlert = new AlertDialog.Builder(this);
+        dlgAlert.setTitle(R.string.problem_occurred);
+        dlgAlert.setCancelable(true);
         IResultCallback<Cursor> callback = new IResultCallback<Cursor>() {
             @Override
             public void onSuccess(final Cursor pCursor) {
@@ -107,6 +110,8 @@ public class DishListActivity extends AppCompatActivity {
 
             @Override
             public void onError(Exception e) {
+                dlgAlert.setMessage(R.string.clean_cache);
+                dlgAlert.create().show();
             }
         };
         final DatabaseHelper helper = ((CoreApplication) getApplication()).mDatabaseHelper;

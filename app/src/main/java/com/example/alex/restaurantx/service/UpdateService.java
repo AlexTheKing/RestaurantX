@@ -1,18 +1,14 @@
 package com.example.alex.restaurantx.service;
 
-import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
-import android.test.mock.MockApplication;
 
 import com.example.alex.restaurantx.CoreApplication;
-import com.example.alex.restaurantx.api.ApiManager;
 import com.example.alex.restaurantx.callbacks.IResultCallback;
 import com.example.alex.restaurantx.constants.Constants;
-import com.example.alex.restaurantx.json.JsonHandler;
 import com.example.alex.restaurantx.model.Dish;
 import com.example.alex.restaurantx.systems.DataManager;
 
@@ -40,7 +36,6 @@ public class UpdateService extends Service {
         mIsStarted = true;
         final CoreApplication application = ((CoreApplication) getApplication());
         final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
-        final NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         final IResultCallback<List<Dish>> menuCallback = new IResultCallback<List<Dish>>() {
             @Override
             public void onSuccess(List<Dish> pDishes) {
@@ -48,7 +43,6 @@ public class UpdateService extends Service {
                 dataManager.resaveDishes(pDishes, new IResultCallback<Long>() {
                     @Override
                     public void onSuccess(Long pLong) {
-                        //TODO : IMPLEMENT NOTIFICATION
                         Intent intent = new Intent(Constants.INTENT_SERVICE_UPDATE_ACTION);
                         intent.putExtra(Constants.BROADCAST_UPDATE_MESSAGE, true);
                         broadcastManager.sendBroadcast(intent);

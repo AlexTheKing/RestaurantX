@@ -15,10 +15,11 @@ public class ApiManager {
 
     private static ApiManager sApiManager;
 
-    private ApiManager() { };
+    private ApiManager() {
+    }
 
-    public static ApiManager getInstance(){
-        if(sApiManager == null){
+    public static ApiManager getInstance() {
+        if (sApiManager == null) {
             sApiManager = new ApiManager();
         }
         return sApiManager;

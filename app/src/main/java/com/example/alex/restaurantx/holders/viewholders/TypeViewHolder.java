@@ -15,7 +15,6 @@ import com.example.alex.restaurantx.adapter.IAdapterHelper;
 import com.example.alex.restaurantx.constants.Constants;
 import com.example.alex.restaurantx.database.DatabaseHelper;
 import com.example.alex.restaurantx.database.models.DishModel;
-import com.example.alex.restaurantx.holders.ContextHolder;
 import com.example.alex.restaurantx.ui.activities.DishListActivity;
 
 public class TypeViewHolder extends RecyclerView.ViewHolder {

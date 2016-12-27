@@ -3,9 +3,9 @@ package com.example.alex.restaurantx.holders.viewholders;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SwitchCompat;
 import android.view.View;
 import android.widget.CompoundButton;
-import android.widget.Switch;
 
 import com.example.alex.restaurantx.R;
 import com.example.alex.restaurantx.adapter.IAdapterHelper;
@@ -15,11 +15,11 @@ import java.util.List;
 
 public class IngredientViewHolder extends RecyclerView.ViewHolder {
 
-    private final Switch mSwitch;
+    private final SwitchCompat mSwitch;
 
     private IngredientViewHolder(View view) {
         super(view);
-        mSwitch = (Switch) view.findViewById(R.id.item_settings_ingredient_switch);
+        mSwitch = (SwitchCompat) view.findViewById(R.id.item_settings_ingredient_switch);
     }
 
     public static IAdapterHelper<IngredientViewHolder, List<String>> getListHelper(final Context pContext) {

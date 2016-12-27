@@ -5,10 +5,8 @@ import android.database.Cursor;
 import android.support.annotation.Nullable;
 
 import com.example.alex.restaurantx.callbacks.IResultCallback;
-import com.example.alex.restaurantx.constants.Constants;
 import com.example.alex.restaurantx.database.DatabaseHelper;
 import com.example.alex.restaurantx.database.models.DishModel;
-import com.example.alex.restaurantx.holders.ContextHolder;
 import com.example.alex.restaurantx.model.Dish;
 
 import java.util.ArrayList;
@@ -19,7 +17,7 @@ public class DataManager {
     public static final String UNIVERSAL_QUANTIFICATOR = "*";
     private final DatabaseHelper mHelper;
 
-    public DataManager(final DatabaseHelper pHelper){
+    public DataManager(final DatabaseHelper pHelper) {
         mHelper = pHelper;
     }
 

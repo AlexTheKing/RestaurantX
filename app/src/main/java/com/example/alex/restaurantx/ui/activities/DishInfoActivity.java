@@ -1,9 +1,12 @@
 package com.example.alex.restaurantx.ui.activities;
 
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -12,7 +15,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.test.mock.MockApplication;
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -25,14 +27,11 @@ import android.widget.Toast;
 import com.example.alex.restaurantx.CoreApplication;
 import com.example.alex.restaurantx.R;
 import com.example.alex.restaurantx.adapter.ListDataAdapter;
-import com.example.alex.restaurantx.api.ApiManager;
 import com.example.alex.restaurantx.callbacks.IResultCallback;
 import com.example.alex.restaurantx.constants.Constants;
 import com.example.alex.restaurantx.database.DatabaseHelper;
 import com.example.alex.restaurantx.database.models.DishModel;
 import com.example.alex.restaurantx.holders.viewholders.CommentViewHolder;
-import com.example.alex.restaurantx.imageloader.ImageLoader;
-import com.example.alex.restaurantx.json.JsonHandler;
 import com.example.alex.restaurantx.model.Dish;
 import com.example.alex.restaurantx.systems.DataManager;
 import com.example.alex.restaurantx.ui.navigation.NavigationViewListener;
@@ -42,14 +41,13 @@ import java.util.List;
 
 public class DishInfoActivity extends AppCompatActivity {
 
-    private final CoreApplication mApplication = ((CoreApplication) getApplication());
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dish_info);
         final String dishNameFromIntent = getIntent().getStringExtra(Constants.INTENT_EXTRA_DISH_NAME);
         final boolean haveProhibited = getIntent().getBooleanExtra(Constants.INTENT_EXTRA_HAVE_PROHIBITED, false);
+        final CoreApplication application = ((CoreApplication) getApplication());
         // TOOLBAR
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -77,7 +75,7 @@ public class DishInfoActivity extends AppCompatActivity {
             @Override
             public void onSuccess(String pResponse) {
 
-                mApplication.mJsonHandler.parseComments(pResponse, new IResultCallback<List<String>>() {
+                application.mJsonHandler.parseComments(pResponse, new IResultCallback<List<String>>() {
                     @Override
                     public void onSuccess(List<String> pStrings) {
                         recyclerView.setAdapter(new ListDataAdapter<>(pStrings, CommentViewHolder.getListHelper(scrollView), R.layout.item_comment));
@@ -108,7 +106,7 @@ public class DishInfoActivity extends AppCompatActivity {
                 boolean handled = false;
                 if (actionId == EditorInfo.IME_ACTION_SEND) {
                     final String instanceId = InstanceID.getInstance(DishInfoActivity.this).getId();
-                    mApplication.mApiManager.setCommentMethod(dishNameFromIntent, instanceId, v.getText().toString(), loadCommentsCallback);
+                    application.mApiManager.setCommentMethod(dishNameFromIntent, instanceId, v.getText().toString(), loadCommentsCallback);
                     v.setText("");
                     handled = true;
                 }
@@ -118,7 +116,7 @@ public class DishInfoActivity extends AppCompatActivity {
         //LOAD DISH
         loadDishFromDatabase(dishNameFromIntent, haveProhibited);
         //LOAD COMMENTS
-        mApplication.mApiManager.getCommentsMethod(dishNameFromIntent, loadCommentsCallback);
+        application.mApiManager.getCommentsMethod(dishNameFromIntent, loadCommentsCallback);
     }
 
     private void loadDishFromDatabase(String pDishNameFromIntent, final boolean pHaveProhibited) {
@@ -131,9 +129,17 @@ public class DishInfoActivity extends AppCompatActivity {
         final TextView dishDescription = (TextView) findViewById(R.id.dish_description);
         final TextView dishIngredients = (TextView) findViewById(R.id.dish_ingredients);
         final RatingBar dishUserRating = (RatingBar) findViewById(R.id.dish_user_rating);
+        LayerDrawable stars = ((LayerDrawable) dishUserRating.getProgressDrawable());
+        stars.getDrawable(0).setColorFilter(ContextCompat.getColor(this, R.color.colorDarkGrey), PorterDuff.Mode.SRC_ATOP);
+        stars.getDrawable(1).setColorFilter(ContextCompat.getColor(this, R.color.colorLightGreen), PorterDuff.Mode.SRC_ATOP);
+        stars.getDrawable(2).setColorFilter(ContextCompat.getColor(this, R.color.colorLightGreen), PorterDuff.Mode.SRC_ATOP);
         final TextView dishAverageRating = (TextView) findViewById(R.id.dish_average_rating);
         final ImageView dishImage = (ImageView) findViewById(R.id.dish_image_full);
-        final DataManager dataManager = new DataManager(mApplication.mDatabaseHelper);
+        final CoreApplication application = ((CoreApplication) getApplication());
+        final DataManager dataManager = new DataManager(application.mDatabaseHelper);
+        final AlertDialog.Builder dlgAlert = new AlertDialog.Builder(DishInfoActivity.this);
+        dlgAlert.setTitle(R.string.problem_occurred);
+        dlgAlert.setCancelable(true);
         dataManager.loadDishes(new IResultCallback<List<Dish>>() {
             @Override
             public void onSuccess(final List<Dish> pDishes) {
@@ -149,36 +155,38 @@ public class DishInfoActivity extends AppCompatActivity {
                 dishUserRating.setRating(dish.getVote().getUserEstimation());
                 dishAverageRating.setText(String.valueOf(dish.getVote().getAverageEstimation()));
                 ((CoreApplication) getApplication()).mImageLoader.downloadAndDraw(dish.getBitmapUrl(), dishImage, null);
-                final AlertDialog.Builder dlgAlert = new AlertDialog.Builder(DishInfoActivity.this);
-                dlgAlert.setTitle(R.string.problem_occurred);
-                dlgAlert.setCancelable(true);
                 dishUserRating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
                     @Override
                     public void onRatingChanged(final RatingBar pRatingBar, final float pEstimation, final boolean pIsFromUser) {
                         if (pIsFromUser) {
                             final String instanceId = InstanceID.getInstance(DishInfoActivity.this).getId();
-                            mApplication.mApiManager.setRateMethod(dishName.getText().toString(), instanceId, ((int) pEstimation), new IResultCallback<String>() {
+                            application.mApiManager.setRateMethod(dishName.getText().toString(), instanceId, ((int) pEstimation), new IResultCallback<String>() {
                                 @Override
                                 public void onSuccess(String pS) {
-                                    dishAverageRating.setText(pS);
-                                    dish.getVote().setUserEstimation(((int) pEstimation));
-                                    dataManager.updateDish(dish, new IResultCallback<Integer>() {
-                                        @Override
-                                        public void onSuccess(Integer pInteger) {
-                                            Toast.makeText(DishInfoActivity.this, "Rating is saved!", Toast.LENGTH_SHORT).show();
-                                        }
+                                    try {
+                                        final float average = Float.parseFloat(pS);
+                                        dishAverageRating.setText(pS);
+                                        dish.getVote().setUserEstimation(((int) pEstimation));
+                                        dataManager.updateDish(dish, new IResultCallback<Integer>() {
+                                            @Override
+                                            public void onSuccess(Integer pInteger) {
+                                                Toast.makeText(DishInfoActivity.this, "Rating is saved!", Toast.LENGTH_SHORT).show();
+                                            }
 
-                                        @Override
-                                        public void onError(Exception e) {
-                                            dlgAlert.setMessage(R.string.problem_but_sent);
-                                            dlgAlert.create().show();
-                                        }
-                                    });
-
+                                            @Override
+                                            public void onError(Exception e) {
+                                                dlgAlert.setMessage(R.string.problem_but_sent);
+                                                dlgAlert.create().show();
+                                            }
+                                        });
+                                    } catch (NumberFormatException ex) {
+                                        onError(ex);
+                                    }
                                 }
 
                                 @Override
                                 public void onError(Exception e) {
+                                    e.printStackTrace();
                                     dlgAlert.setMessage(R.string.checkout_internet);
                                     dlgAlert.create().show();
                                 }
@@ -190,7 +198,9 @@ public class DishInfoActivity extends AppCompatActivity {
 
             @Override
             public void onError(final Exception e) {
-
+                e.printStackTrace();
+                dlgAlert.setMessage(R.string.clean_cache);
+                dlgAlert.create().show();
             }
 
         }, WHERE_CLAUSE, DatabaseHelper.getSqlStringInterpret(pDishNameFromIntent));

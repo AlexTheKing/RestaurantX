@@ -40,7 +40,7 @@ public class HttpClient {
             if (inputStream != null) {
                 try {
                     inputStream.close();
-                } catch (IOException ex){
+                } catch (IOException ex) {
                     ex.printStackTrace();
                 }
             }

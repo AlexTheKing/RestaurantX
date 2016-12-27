@@ -16,7 +16,7 @@
     <string name="github_repo_readme">https://github.com/AlexTheKing/final-project/blob/master/README.md</string>
     <string name="contains">"Contains: %s"</string>
     <string name="search">Search</string>
-    <string name="problem_occurred">Problem during updating</string>
+    <string name="problem_occurred">Problem occurred</string>
     <string name="checkout_internet">Checkout your Internet connection or try later</string>
     <string name="spinner">spinner</string>
     <string name="problem_but_sent">A problem with saving your rating occurred, but it was sent</string>
@@ -26,4 +26,7 @@
     <string name="top_quote">“</string>
     <string name="bottom_quote">„</string>
     <string name="related_comments">See related comments:</string>
+    <string name="fisheye">fisheye</string>
+    <string name="clean_cache">Error with database occurred, please clean application cache</string>
+    <string name="updating">Updating...</string>
 </resources>

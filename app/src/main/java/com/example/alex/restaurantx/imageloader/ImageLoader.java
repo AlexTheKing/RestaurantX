@@ -116,50 +116,50 @@ public class ImageLoader {
                 return bitmap;
             }
         },
-        pUrl,
-        null,
-        new IResultCallback<Bitmap>() {
+                pUrl,
+                null,
+                new IResultCallback<Bitmap>() {
 
-            private void cleanStack() {
-                synchronized (mLockObj) {
-                    if (findModel(pUrl) != -1) {
-                        mDownloadPriorities.remove(findModel(pUrl));
+                    private void cleanStack() {
+                        synchronized (mLockObj) {
+                            if (findModel(pUrl) != -1) {
+                                mDownloadPriorities.remove(findModel(pUrl));
+                            }
+                        }
+                        recalculatePriorities();
                     }
-                }
-                recalculatePriorities();
-            }
 
-            @Override
-            public void onSuccess(final Bitmap pBitmap) {
-                if (pBitmap != null) {
-                    Log.d(TAG, "SUCCESS: DOWNLOADED " + pUrl);
-                    Log.d(TAG, "SUCCESS: LAY IN LRU");
-                    synchronized (mLockObj) {
-                        if (!mLruCache.snapshot().containsKey(pUrl)) {
-                            mLruCache.put(pUrl, pBitmap);
+                    @Override
+                    public void onSuccess(final Bitmap pBitmap) {
+                        if (pBitmap != null) {
+                            Log.d(TAG, "SUCCESS: DOWNLOADED " + pUrl);
+                            Log.d(TAG, "SUCCESS: LAY IN LRU");
+                            synchronized (mLockObj) {
+                                if (!mLruCache.snapshot().containsKey(pUrl)) {
+                                    mLruCache.put(pUrl, pBitmap);
+                                }
+                            }
+                            if (pView.getTag() == pUrl) {
+                                if (pArgs.length != 0) {
+                                    final Bitmap resizedBitmap = Bitmap.createScaledBitmap(pBitmap, pArgs[0], pArgs[1], true);
+                                    pView.setImageBitmap(resizedBitmap);
+                                } else {
+                                    pView.setImageBitmap(pBitmap);
+                                }
+                                if (pCallback != null) {
+                                    pCallback.onDownload(pBitmap);
+                                }
+                            }
                         }
+                        cleanStack();
                     }
-                    if (pView.getTag() == pUrl) {
-                        if (pArgs.length != 0) {
-                            final Bitmap resizedBitmap = Bitmap.createScaledBitmap(pBitmap, pArgs[0], pArgs[1], true);
-                            pView.setImageBitmap(resizedBitmap);
-                        } else {
-                            pView.setImageBitmap(pBitmap);
-                        }
-                        if (pCallback != null) {
-                            pCallback.onDownload(pBitmap);
-                        }
-                    }
-                }
-                cleanStack();
-            }
 
-            @Override
-            public void onError(final Exception e) {
-                cleanStack();
-                Log.e(TAG, "FAILURE: ", e);
-            }
-        });
+                    @Override
+                    public void onError(final Exception e) {
+                        cleanStack();
+                        Log.e(TAG, "FAILURE: ", e);
+                    }
+                });
         final PriorityModel model = new PriorityModel(priorityRunnable);
         model.setUrl(pUrl);
         model.setPriority(Thread.MAX_PRIORITY);

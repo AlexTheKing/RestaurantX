@@ -32,7 +32,7 @@ public interface Constants {
         int DEFAULT_NUMBER_OF_THREADS = 3;
     }
 
-    interface JsonHandlerSettigns {
+    interface JsonHandlerSettings {
         String RESPONSE = "response";
         String COMMENTS = "comments";
         String TYPES = "types";

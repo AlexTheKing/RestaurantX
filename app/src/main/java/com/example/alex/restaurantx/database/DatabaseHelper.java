@@ -17,7 +17,6 @@ import com.example.alex.restaurantx.database.annotations.dbPrimaryKey;
 import com.example.alex.restaurantx.database.annotations.dbReal;
 import com.example.alex.restaurantx.database.annotations.dbText;
 import com.example.alex.restaurantx.database.models.TablesList;
-import com.example.alex.restaurantx.holders.ContextHolder;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -34,8 +33,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private DatabaseHelper(final Context pContext, final int pVersion) {
         super(pContext, mDatabaseName, null, pVersion);
-        // TODO : REMOVE DELETING DATABASE CODE LINE
-        pContext.deleteDatabase(mDatabaseName);
         getWritableDatabase();
     }
 

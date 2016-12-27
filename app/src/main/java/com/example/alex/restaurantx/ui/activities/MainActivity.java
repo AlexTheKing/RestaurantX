@@ -17,7 +17,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.test.mock.MockApplication;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -35,9 +34,7 @@ import com.example.alex.restaurantx.R;
 import com.example.alex.restaurantx.adapter.CursorDataAdapter;
 import com.example.alex.restaurantx.callbacks.IResultCallback;
 import com.example.alex.restaurantx.constants.Constants;
-import com.example.alex.restaurantx.database.DatabaseHelper;
 import com.example.alex.restaurantx.database.models.DishModel;
-import com.example.alex.restaurantx.holders.ContextHolder;
 import com.example.alex.restaurantx.holders.viewholders.TypeViewHolder;
 import com.example.alex.restaurantx.service.UpdateService;
 import com.example.alex.restaurantx.ui.navigation.NavigationViewListener;
@@ -158,6 +155,11 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onError(Exception e) {
+                final AlertDialog.Builder dlgAlert = new AlertDialog.Builder(MainActivity.this);
+                dlgAlert.setTitle(R.string.problem_occurred);
+                dlgAlert.setCancelable(true);
+                dlgAlert.setMessage(R.string.clean_cache);
+                dlgAlert.create().show();
             }
         }, selectQuery, DishModel.class, null);
     }
@@ -178,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
                 mSpinner.setAnimation(mAnimation);
                 mAnimation.start();
                 mSpinner.setVisibility(View.VISIBLE);
-                Toast.makeText(this, "Updating...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.updating, Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

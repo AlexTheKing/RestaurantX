@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.LayerDrawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -19,7 +22,6 @@ import com.example.alex.restaurantx.adapter.IAdapterHelper;
 import com.example.alex.restaurantx.constants.Constants;
 import com.example.alex.restaurantx.database.DatabaseHelper;
 import com.example.alex.restaurantx.database.models.DishModel;
-import com.example.alex.restaurantx.holders.ContextHolder;
 import com.example.alex.restaurantx.ui.activities.DishInfoActivity;
 
 public class DishViewHolder extends RecyclerView.ViewHolder {
@@ -67,6 +69,9 @@ public class DishViewHolder extends RecyclerView.ViewHolder {
                 final String currency = DatabaseHelper.getUsualStringInterpret(pCursor.getString(indexCurrencyColumn));
                 pHolder.mCost.setText(String.format("%.2f" + currency, pCursor.getFloat(indexCostColumn)));
                 pHolder.mAverageRating.setRating(pCursor.getFloat(indexAverageEstimationColumn));
+                LayerDrawable stars = (LayerDrawable) pHolder.mAverageRating.getProgressDrawable();
+                stars.getDrawable(1).setColorFilter(ContextCompat.getColor(pContext, R.color.colorLightGreen), PorterDuff.Mode.SRC_ATOP);
+                stars.getDrawable(2).setColorFilter(ContextCompat.getColor(pContext, R.color.colorLightGreen), PorterDuff.Mode.SRC_ATOP);
                 final boolean finalHaveProhibited = haveProhibited;
                 pHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override

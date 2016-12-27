@@ -1,7 +1,6 @@
 package com.example.alex.restaurantx.json;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.example.alex.restaurantx.callbacks.IResultCallback;
 import com.example.alex.restaurantx.constants.Constants;
@@ -20,14 +19,15 @@ public class JsonHandler {
 
     private static JsonHandler sJsonHandler;
 
-    public static JsonHandler getInstance(){
-        if(sJsonHandler == null){
+    public static JsonHandler getInstance() {
+        if (sJsonHandler == null) {
             sJsonHandler = new JsonHandler();
         }
         return sJsonHandler;
     }
 
-    private JsonHandler() { }
+    private JsonHandler() {
+    }
 
     public void parseTypesOfDishes(final String pJsonString, @NotNull final IResultCallback<List<String>> pCallback) {
         new AsyncTask<String, Void, List<String>>() {
@@ -35,8 +35,8 @@ public class JsonHandler {
             protected List<String> doInBackground(final String... pJsonStrings) {
                 try {
                     final List<String> types = new ArrayList<>();
-                    final JSONObject rootObject = new JSONObject(pJsonStrings[0]).getJSONObject(Constants.JsonHandlerSettigns.RESPONSE);
-                    final JSONArray typesArray = rootObject.getJSONArray(Constants.JsonHandlerSettigns.TYPES);
+                    final JSONObject rootObject = new JSONObject(pJsonStrings[0]).getJSONObject(Constants.JsonHandlerSettings.RESPONSE);
+                    final JSONArray typesArray = rootObject.getJSONArray(Constants.JsonHandlerSettings.TYPES);
                     for (int index = 0; index < typesArray.length(); index++) {
                         types.add(typesArray.getString(index));
                     }
@@ -62,7 +62,7 @@ public class JsonHandler {
             protected List<Dish> doInBackground(final String... pJsonStrings) {
                 try {
                     final List<Dish> menu = new ArrayList<>();
-                    final JSONObject rootObject = new JSONObject(pJsonStrings[0]).getJSONObject(Constants.JsonHandlerSettigns.RESPONSE);
+                    final JSONObject rootObject = new JSONObject(pJsonStrings[0]).getJSONObject(Constants.JsonHandlerSettings.RESPONSE);
                     final JSONArray jsonArrayDishesOfType = rootObject.getJSONArray(pTypeOfDishes);
                     for (int dishesIndex = 0; dishesIndex < jsonArrayDishesOfType.length(); dishesIndex++) {
                         final JSONObject jsonDishObject = jsonArrayDishesOfType.getJSONObject(dishesIndex);
@@ -110,8 +110,8 @@ public class JsonHandler {
             protected List<String> doInBackground(final String... pJsonStrings) {
                 try {
                     final List<String> comments = new ArrayList<>();
-                    final JSONObject rootObject = new JSONObject(pJsonStrings[0]).getJSONObject(Constants.JsonHandlerSettigns.RESPONSE);
-                    final JSONArray commentsArray = rootObject.getJSONArray(Constants.JsonHandlerSettigns.COMMENTS);
+                    final JSONObject rootObject = new JSONObject(pJsonStrings[0]).getJSONObject(Constants.JsonHandlerSettings.RESPONSE);
+                    final JSONArray commentsArray = rootObject.getJSONArray(Constants.JsonHandlerSettings.COMMENTS);
                     for (int index = 0; index < commentsArray.length(); index++) {
                         comments.add(commentsArray.getString(index));
                     }
