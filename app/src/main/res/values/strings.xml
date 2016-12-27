@@ -8,7 +8,7 @@
     <string name="navigation_drawer_close" translatable="false">drawer closing</string>
     <string name="settings">Allergic ingredients</string>
     <string name="help">Help</string>
-    <string name="open_source" translatable="false">Open source</string>
+    <string name="open_source">Open source</string>
     <string name="about">About</string>
     <string name="about_info">RestaurantX\nAlexander Beytuk\nFor EPAM training\n2016</string>
     <string name="github_repo" translatable="false">https://github.com/AlexTheKing/final-project</string>

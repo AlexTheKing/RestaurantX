@@ -12,7 +12,7 @@
     <string name="ingredients_string">\"Zutaten: %s\"</string>
     <string name="manage_allergic_ingredients">Verwalten allergische Zutaten</string>
     <string name="menu">Menü</string>
-    <string name="open_source"></string>
+    <string name="open_source">Open source</string>
     <string name="please_refresh">Oje, hier sind keine Elemente</string>
     <string name="problem_but_sent">Ein Problem hat mit Ihrer Bewertung aufgetreten, aber sie hat gesendet</string>
     <string name="problem_occurred">Problem hat aufgetreten</string>
