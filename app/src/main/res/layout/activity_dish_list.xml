@@ -13,9 +13,9 @@
         android:orientation="vertical">
 
         <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/toolbar"
             android:background="?attr/colorPrimary"
             app:titleTextColor="@android:color/white">
         </android.support.v7.widget.Toolbar>
@@ -30,20 +30,20 @@
             android:paddingTop="@dimen/activity_vertical_margin">
 
             <TextView
+                android:id="@+id/type_dishes_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/type_dishes_header"
-                android:textStyle="normal"
                 android:fontFamily="sans-serif-regular"
-                android:textSize="24sp"
+                android:gravity="center"
                 android:textColor="@android:color/black"
-                android:gravity="center"/>
+                android:textSize="24sp"
+                android:textStyle="normal"/>
 
             <android.support.v7.widget.RecyclerView
-                android:padding="2dp"
+                android:id="@+id/activity_dish_list_recycleview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/activity_dish_list_recycleview"/>
+                android:padding="2dp"/>
         </LinearLayout>
     </LinearLayout>
 

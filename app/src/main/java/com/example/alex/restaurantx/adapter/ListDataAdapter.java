@@ -11,9 +11,9 @@ public class ListDataAdapter<Holder extends RecyclerView.ViewHolder> extends Rec
 
     private final List<String> mData;
     private final int mLayout;
-    private final IAdapterHelper<Holder, List<String>> mHelper;
+    private final IAdapterBinder<Holder, List<String>> mHelper;
 
-    public ListDataAdapter(final List<String> pData, final IAdapterHelper<Holder, List<String>> pHelper, final int pLayout) {
+    public ListDataAdapter(final List<String> pData, final IAdapterBinder<Holder, List<String>> pHelper, final int pLayout) {
         mData = pData;
         mLayout = pLayout;
         mHelper = pHelper;
@@ -22,12 +22,13 @@ public class ListDataAdapter<Holder extends RecyclerView.ViewHolder> extends Rec
     @Override
     public Holder onCreateViewHolder(final ViewGroup pParent, final int pViewType) {
         final View view = LayoutInflater.from(pParent.getContext()).inflate(mLayout, pParent, false);
-        return mHelper.build(view);
+
+        return mHelper.onCreateViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final Holder pHolder, final int pPosition) {
-        mHelper.OnBindViewHolder(mData, pHolder, pPosition);
+        mHelper.onBindViewHolder(mData, pHolder, pPosition);
     }
 
     @Override

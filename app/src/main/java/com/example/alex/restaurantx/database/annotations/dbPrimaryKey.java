@@ -10,5 +10,4 @@ import java.lang.annotation.Target;
 public @interface dbPrimaryKey {
 
     String value() default "PRIMARY KEY";
-
 }

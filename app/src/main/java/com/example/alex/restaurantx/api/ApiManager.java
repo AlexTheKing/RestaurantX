@@ -7,74 +7,85 @@ import com.example.alex.restaurantx.callbacks.IResultCallback;
 import com.example.alex.restaurantx.constants.Constants;
 import com.example.alex.restaurantx.network.HttpClient;
 import com.example.alex.restaurantx.network.Request;
+import com.example.alex.restaurantx.util.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-public class ApiManager {
+public final class ApiManager {
 
     private static ApiManager sApiManager;
+    private final String mBaseUrl = Constants.ApiSettings.HOST_URL + Constants.ApiSettings.RELATIVE_URL;
+    private final HttpClient mClient;
 
     private ApiManager() {
+        mClient = new HttpClient();
     }
 
     public static ApiManager getInstance() {
         if (sApiManager == null) {
             sApiManager = new ApiManager();
         }
+
         return sApiManager;
     }
 
     public void getTypesMethod(@NonNull final IResultCallback<String> pCallback) {
-        makeApiRequest(Constants.ApiSettings.TYPES_METHOD, pCallback);
+        makeApiRequest(Constants.ApiSettings.LIST_TYPES, pCallback);
     }
 
     public void getMenuMethod(@NonNull final IResultCallback<String> pCallback) {
-        makeApiRequest(Constants.ApiSettings.MENU_METHOD, pCallback);
+        makeApiRequest(Constants.ApiSettings.LIST_DISHES, pCallback);
     }
 
     public void getCommentsMethod(final String pDishName, @NonNull final IResultCallback<String> pCallback) {
         try {
-            String encodedName = URLEncoder.encode(pDishName, "UTF-8");
-            makeApiRequest(String.format(Constants.ApiSettings.COMMENTS_METHOD, encodedName), pCallback);
-        } catch (UnsupportedEncodingException ex) {
+            final String encodedName = URLEncoder.encode(pDishName, StringUtils.UTF8);
+            makeApiRequest(String.format(Constants.ApiSettings.LIST_COMMENTS, encodedName), pCallback);
+        } catch (final UnsupportedEncodingException ex) {
             pCallback.onError(ex);
         }
     }
 
-    public void setRateMethod(final String pDishName, final String pInstanceId, final int pRate, @Nullable final IResultCallback<String> pCallback) {
+    public void getRecommendationsMethod(@NonNull final IResultCallback<String> pCallback) {
+
+    }
+
+    public void addRateMethod(final String pDishName, final String pInstanceId, final int pRate, @Nullable final IResultCallback<String> pCallback) {
         try {
-            String encodedName = URLEncoder.encode(pDishName, "UTF-8");
-            final String rateMethod = String.format(Constants.ApiSettings.RATE_METHOD, encodedName, pInstanceId, String.valueOf(pRate));
+            final String encodedName = URLEncoder.encode(pDishName, StringUtils.UTF8);
+            final String rateMethod = String.format(Constants.ApiSettings.ADD_RATE, encodedName, pInstanceId, String.valueOf(pRate));
             makeApiRequest(rateMethod, pCallback);
-        } catch (UnsupportedEncodingException ex) {
+        } catch (final UnsupportedEncodingException ex) {
             if (pCallback != null) {
                 pCallback.onError(ex);
             }
         }
     }
 
-    public void setCommentMethod(final String pDishName, final String pInstanceId, final String pComment, @Nullable final IResultCallback<String> pCallback) {
+    public void addCommentMethod(final String pDishName, final String pInstanceId, final String pComment, @Nullable final IResultCallback<String> pCallback) {
         try {
-            String encodedName = URLEncoder.encode(pDishName, "UTF-8");
-            String encodedComment = URLEncoder.encode(pComment, "UTF-8");
-            final String commentMethod = String.format(Constants.ApiSettings.ADD_COMMENT_METHOD, encodedName, pInstanceId, encodedComment);
+            final String encodedName = URLEncoder.encode(pDishName, StringUtils.UTF8);
+            final String encodedComment = URLEncoder.encode(pComment, StringUtils.UTF8);
+            final String commentMethod = String.format(Constants.ApiSettings.ADD_COMMENT, encodedName, pInstanceId, encodedComment);
             makeApiRequest(commentMethod, pCallback);
-        } catch (UnsupportedEncodingException ex) {
+        } catch (final UnsupportedEncodingException ex) {
             if (pCallback != null) {
                 pCallback.onError(ex);
             }
         }
     }
+
+
 
     private void makeApiRequest(final String pMethodUrl, @Nullable final IResultCallback<String> pCallback) {
-        final HttpClient client = new HttpClient();
         final Request request = new Request.Builder()
-                .setMethod(Constants.ApiSettings.GET_METHOD)
-                .setUrl(Constants.ApiSettings.BASE_URL + Constants.ApiSettings.PART_URL + pMethodUrl)
+                .setMethod(HttpClient.GET_METHOD)
+                .setUrl(mBaseUrl + pMethodUrl)
                 .build();
 
-        client.makeAsyncRequest(request, new IResultCallback<String>() {
+        mClient.makeAsyncRequest(request, new IResultCallback<String>() {
+
             @Override
             public void onSuccess(final String pResponse) {
                 if (pCallback != null) {

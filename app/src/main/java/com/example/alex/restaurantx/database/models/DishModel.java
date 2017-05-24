@@ -6,7 +6,7 @@ import com.example.alex.restaurantx.database.annotations.dbPrimaryKey;
 import com.example.alex.restaurantx.database.annotations.dbReal;
 import com.example.alex.restaurantx.database.annotations.dbText;
 
-@Table(value = "dishes")
+@Table("dishes")
 public class DishModel {
 
     @dbText

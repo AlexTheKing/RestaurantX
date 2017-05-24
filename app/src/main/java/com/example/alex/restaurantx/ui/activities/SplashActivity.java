@@ -7,10 +7,10 @@ import android.support.v7.app.AppCompatActivity;
 public class SplashActivity extends AppCompatActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent intent = new Intent(this, MainActivity.class);
+        final Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
     }

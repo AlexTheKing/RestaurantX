@@ -4,15 +4,11 @@ import com.example.alex.restaurantx.threads.PriorityRunnable;
 
 class PriorityModel {
 
-    private String mUrl;
     private final PriorityRunnable mRunnable;
+    private String mUrl;
 
     PriorityModel(final PriorityRunnable pRunnable) {
         mRunnable = pRunnable;
-    }
-
-    public PriorityRunnable getRunnable() {
-        return mRunnable;
     }
 
     String getUrl() {
@@ -29,5 +25,9 @@ class PriorityModel {
 
     void setPriority(final int pPriority) {
         mRunnable.setPriority(pPriority);
+    }
+
+    public PriorityRunnable getRunnable() {
+        return mRunnable;
     }
 }

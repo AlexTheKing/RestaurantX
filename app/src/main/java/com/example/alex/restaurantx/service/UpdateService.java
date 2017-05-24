@@ -5,115 +5,133 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.example.alex.restaurantx.CoreApplication;
+import com.example.alex.restaurantx.api.ApiManager;
 import com.example.alex.restaurantx.callbacks.IResultCallback;
 import com.example.alex.restaurantx.constants.Constants;
+import com.example.alex.restaurantx.json.JsonHandler;
 import com.example.alex.restaurantx.model.Dish;
 import com.example.alex.restaurantx.systems.DataManager;
 
 import java.util.List;
 
-
 public class UpdateService extends Service {
 
-    private boolean mIsStarted = false;
+    private final String TAG = this.getClass().getCanonicalName();
+    private boolean mIsStarted;
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(final Intent intent, final int flags, final int startId) {
         execute();
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Nullable
     @Override
-    public IBinder onBind(Intent pIntent) {
+    public IBinder onBind(final Intent pIntent) {
         return null;
     }
 
     private void execute() {
-        if (mIsStarted) return;
+        if (mIsStarted) {
+            return;
+        }
+
         mIsStarted = true;
         final CoreApplication application = ((CoreApplication) getApplication());
+        final ApiManager apiManager = application.getApiManager();
+        final JsonHandler jsonHandler = application.getJsonHandler();
         final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
-        final IResultCallback<List<Dish>> menuCallback = new IResultCallback<List<Dish>>() {
+        final IResultCallback<Void> errorCallback = new IResultCallback<Void>() {
+
             @Override
-            public void onSuccess(List<Dish> pDishes) {
-                DataManager dataManager = new DataManager(application.mDatabaseHelper);
+            public void onSuccess(final Void pVoid) {
+
+            }
+
+            @Override
+            public void onError(final Exception e) {
+                Log.e(TAG, "onError: " + e.getMessage(), e);
+                final Intent intent = new Intent(Constants.INTENT_EXTRA_ACTION_UPDATE);
+                intent.putExtra(Constants.ACTION_UPDATE_BROADCAST, false);
+                broadcastManager.sendBroadcast(intent);
+                stopSelf();
+            }
+        };
+        final IResultCallback<List<Dish>> menuCallback = new IResultCallback<List<Dish>>() {
+
+            @Override
+            public void onSuccess(final List<Dish> pDishes) {
+                final DataManager dataManager = new DataManager(application.getDatabaseHelper());
                 dataManager.resaveDishes(pDishes, new IResultCallback<Long>() {
+
                     @Override
-                    public void onSuccess(Long pLong) {
-                        Intent intent = new Intent(Constants.INTENT_SERVICE_UPDATE_ACTION);
-                        intent.putExtra(Constants.BROADCAST_UPDATE_MESSAGE, true);
+                    public void onSuccess(final Long pLong) {
+                        final Intent intent = new Intent(Constants.INTENT_EXTRA_ACTION_UPDATE);
+                        intent.putExtra(Constants.ACTION_UPDATE_BROADCAST, true);
                         broadcastManager.sendBroadcast(intent);
                         stopSelf();
                     }
 
                     @Override
-                    public void onError(Exception e) {
-                        e.printStackTrace();
-                        Intent intent = new Intent(Constants.INTENT_SERVICE_UPDATE_ACTION);
-                        intent.putExtra(Constants.BROADCAST_UPDATE_MESSAGE, false);
-                        broadcastManager.sendBroadcast(intent);
-                        stopSelf();
+                    public void onError(final Exception e) {
+                        errorCallback.onError(e);
                     }
                 });
             }
 
             @Override
-            public void onError(Exception e) {
-                e.printStackTrace();
-                Intent intent = new Intent(Constants.INTENT_SERVICE_UPDATE_ACTION);
-                intent.putExtra(Constants.BROADCAST_UPDATE_MESSAGE, false);
+            public void onError(final Exception e) {
+                Log.e(TAG, "onError: " + e.getMessage(), e);
+                final Intent intent = new Intent(Constants.INTENT_EXTRA_ACTION_UPDATE);
+                intent.putExtra(Constants.ACTION_UPDATE_BROADCAST, false);
                 broadcastManager.sendBroadcast(intent);
                 stopSelf();
             }
         };
 
         final IResultCallback<List<String>> typesCallback = new IResultCallback<List<String>>() {
+
             @Override
-            public void onSuccess(List<String> pTypes) {
+            public void onSuccess(final List<String> pTypes) {
                 for (final String type : pTypes) {
-                    application.mApiManager.getMenuMethod(new IResultCallback<String>() {
+                    apiManager.getMenuMethod(new IResultCallback<String>() {
+
                         @Override
-                        public void onSuccess(String pResponse) {
-                            application.mJsonHandler.parseMenu(pResponse, type, menuCallback);
+                        public void onSuccess(final String pResponse) {
+                            jsonHandler.parseMenu(pResponse, type, menuCallback);
                         }
 
                         @Override
-                        public void onError(Exception e) {
-                            e.printStackTrace();
-                            Intent intent = new Intent(Constants.INTENT_SERVICE_UPDATE_ACTION);
-                            intent.putExtra(Constants.BROADCAST_UPDATE_MESSAGE, false);
-                            broadcastManager.sendBroadcast(intent);
-                            stopSelf();
+                        public void onError(final Exception e) {
+                            errorCallback.onError(e);
                         }
                     });
                 }
             }
 
             @Override
-            public void onError(Exception e) {
-                e.printStackTrace();
-                Intent intent = new Intent(Constants.INTENT_SERVICE_UPDATE_ACTION);
-                intent.putExtra(Constants.BROADCAST_UPDATE_MESSAGE, false);
+            public void onError(final Exception e) {
+                Log.e(TAG, "onError: " + e.getMessage(), e);
+                final Intent intent = new Intent(Constants.INTENT_EXTRA_ACTION_UPDATE);
+                intent.putExtra(Constants.ACTION_UPDATE_BROADCAST, false);
                 broadcastManager.sendBroadcast(intent);
                 stopSelf();
             }
         };
-        application.mApiManager.getTypesMethod(new IResultCallback<String>() {
+
+        apiManager.getTypesMethod(new IResultCallback<String>() {
+
             @Override
             public void onSuccess(final String pResponse) {
-                application.mJsonHandler.parseTypesOfDishes(pResponse, typesCallback);
+                jsonHandler.parseTypesOfDishes(pResponse, typesCallback);
             }
 
             @Override
             public void onError(final Exception e) {
-                e.printStackTrace();
-                Intent intent = new Intent(Constants.INTENT_SERVICE_UPDATE_ACTION);
-                intent.putExtra(Constants.BROADCAST_UPDATE_MESSAGE, false);
-                broadcastManager.sendBroadcast(intent);
-                stopSelf();
+                errorCallback.onError(e);
             }
         });
     }

@@ -7,7 +7,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class ThreadManager {
+public final class ThreadManager {
 
     private static ThreadManager sThreadManager;
     private final ExecutorService mExecutorService;
@@ -15,9 +15,11 @@ public class ThreadManager {
 
     private ThreadManager() {
         int mNumberOfThreads = Constants.ThreadManagerSettings.DEFAULT_NUMBER_OF_THREADS;
-        if (Runtime.getRuntime().availableProcessors() > 2) {
+
+        if (Runtime.getRuntime().availableProcessors() > Constants.ThreadManagerSettings.DEFAULT_PROCESSORS_THRESHOLD) {
             mNumberOfThreads = Runtime.getRuntime().availableProcessors();
         }
+
         mThreadQueue = new PriorityBlockingQueue<>();
         this.mExecutorService = new ThreadPoolExecutor(mNumberOfThreads, mNumberOfThreads, Long.MAX_VALUE, TimeUnit.NANOSECONDS, mThreadQueue);
     }
@@ -26,6 +28,7 @@ public class ThreadManager {
         if (sThreadManager == null) {
             sThreadManager = new ThreadManager();
         }
+
         return sThreadManager;
     }
 

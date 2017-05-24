@@ -2,8 +2,7 @@ package com.example.alex.restaurantx.imageloader;
 
 import android.graphics.Bitmap;
 
-public interface IBitmapDownloadedCallback {
+interface IBitmapDownloadedCallback {
 
     void onDownload(final Bitmap pBitmap);
-
 }

@@ -2,7 +2,7 @@ package com.example.alex.restaurantx.holders;
 
 import android.content.Context;
 
-public class ContextHolder {
+public final class ContextHolder {
 
     private static ContextHolder sContextHolder;
     private Context mContext;
@@ -14,6 +14,7 @@ public class ContextHolder {
         if (sContextHolder == null) {
             sContextHolder = new ContextHolder();
         }
+
         return sContextHolder;
     }
 
@@ -21,7 +22,7 @@ public class ContextHolder {
         return mContext;
     }
 
-    public void setContext(Context pContext) {
+    public void setContext(final Context pContext) {
         mContext = pContext;
     }
 

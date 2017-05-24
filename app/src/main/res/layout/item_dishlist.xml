@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:layout_marginLeft="8dp"
-              android:layout_marginRight="8dp">
+              android:layout_marginRight="8dp"
+              android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,49 +15,49 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:orientation="vertical">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:id="@+id/dish_list_item_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-light"
                 android:textColor="@android:color/black"
-                android:textSize="18sp"
-                android:fontFamily="sans-serif-light"/>
+                android:textSize="18sp"/>
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:id="@+id/dish_list_item_prohibited"
-                android:textColor="@color/colorDarkRed"
-                android:textSize="16sp"
-                android:fontFamily="sans-serif-light"/>
-
-            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
+                android:fontFamily="sans-serif-light"
+                android:textColor="@color/colorDarkRed"
+                android:textSize="16sp"/>
+
+            <TextView
                 android:id="@+id/dish_list_item_cost"
-                android:fontFamily="sans-serif-regular"/>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-regular"
+                android:textSize="16sp"/>
         </LinearLayout>
 
         <RatingBar
-            android:layout_marginStart="10dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/dish_list_item_average_rating"
             style="?android:attr/ratingBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginStart="10dp"
             android:numStars="5"
             android:stepSize="1"/>
 
     </LinearLayout>
 
     <View
-        android:layout_marginTop="1dp"
-        android:layout_marginBottom="1dp"
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:layout_marginBottom="1dp"
+        android:layout_marginTop="1dp"
         android:background="@color/colorDarkGrey"/>
 </LinearLayout>

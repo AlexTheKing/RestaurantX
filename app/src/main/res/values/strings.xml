@@ -29,4 +29,5 @@
     <string name="fisheye" translatable="false">fisheye</string>
     <string name="clean_cache">Error with database occurred, please clean application\'s cache</string>
     <string name="updating">Updating…</string>
+    <string name="rating_saved">Rating is saved!</string>
 </resources>

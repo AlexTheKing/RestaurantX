@@ -14,9 +14,9 @@
                   android:orientation="vertical">
 
         <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/toolbar"
             android:background="?attr/colorPrimary"
             app:titleTextColor="@android:color/white">
         </android.support.v7.widget.Toolbar>
@@ -33,33 +33,33 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/menu"
-                android:textSize="24sp"
                 android:fontFamily="sans-serif-regular"
+                android:gravity="center"
+                android:text="@string/menu"
                 android:textColor="@android:color/black"
-                android:gravity="center"/>
+                android:textSize="24sp"/>
 
             <ImageView
+                android:id="@+id/spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/spinner"
                 android:layout_gravity="center"
-                android:src="@drawable/spinner"
                 android:contentDescription="@string/spinner"
+                android:src="@drawable/spinner"
                 android:visibility="gone"/>
 
             <android.support.v7.widget.RecyclerView
-                android:padding="2dp"
+                android:id="@+id/activity_type_list_recyclerview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/activity_type_list_recyclerview"/>
+                android:padding="2dp"/>
 
             <LinearLayout
+                android:id="@android:id/empty"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@android:id/empty"
-                android:visibility="gone"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <View
                     android:layout_width="0dp"
@@ -69,14 +69,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textStyle="normal"
-                    android:fontFamily="sans-serif-light"
-                    android:textSize="18sp"
-                    android:textColor="@color/colorDarkestGrey"
                     android:layout_gravity="center"
-                    android:text="@string/please_refresh"
+                    android:drawableTop="@mipmap/wedding_reception_pink"
+                    android:fontFamily="sans-serif-light"
                     android:gravity="center"
-                    android:drawableTop="@mipmap/wedding_reception_pink"/>
+                    android:text="@string/please_refresh"
+                    android:textColor="@color/colorDarkestGrey"
+                    android:textSize="18sp"
+                    android:textStyle="normal"/>
 
                 <View
                     android:layout_width="0dp"

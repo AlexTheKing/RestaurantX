@@ -9,10 +9,10 @@ import android.view.ViewGroup;
 public class CursorDataAdapter<Holder extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<Holder> {
 
     private final Cursor mCursor;
-    private final IAdapterHelper<Holder, Cursor> mHelper;
+    private final IAdapterBinder<Holder, Cursor> mHelper;
     private final int mLayout;
 
-    public CursorDataAdapter(final Cursor pCursor, final IAdapterHelper<Holder, Cursor> pCallback, final int pLayout) {
+    public CursorDataAdapter(final Cursor pCursor, final IAdapterBinder<Holder, Cursor> pCallback, final int pLayout) {
         mCursor = pCursor;
         mHelper = pCallback;
         mLayout = pLayout;
@@ -21,12 +21,13 @@ public class CursorDataAdapter<Holder extends RecyclerView.ViewHolder> extends R
     @Override
     public Holder onCreateViewHolder(final ViewGroup pParent, final int pViewType) {
         final View view = LayoutInflater.from(pParent.getContext()).inflate(mLayout, pParent, false);
-        return mHelper.build(view);
+
+        return mHelper.onCreateViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final Holder pHolder, final int pPosition) {
-        mHelper.OnBindViewHolder(mCursor, pHolder, pPosition);
+        mHelper.onBindViewHolder(mCursor, pHolder, pPosition);
     }
 
     @Override

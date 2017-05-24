@@ -12,14 +12,19 @@ public class PriorityRunnable<Params, Progress, Result> implements Runnable, Com
     private final IProgressCallback<Progress> mProgressCallback;
     private final IResultCallback<Result> mResultCallback;
     private final Handler mHandler;
+    private final IProgressCallback<Progress> mTaskProgressCallback = new IProgressCallback<Progress>() {
+
+        @Override
+        public void onProgressUpdate(final Progress pProgress) {
+            if (mHandler != null) {
+                mHandler.post(getHandlerPostProgressRunnable(pProgress));
+            }
+        }
+    };
     private int mPriority;
 
-    public int getPriority() {
-        return mPriority;
-    }
-
-    public void setPriority(final int pPriority) {
-        mPriority = pPriority;
+    public PriorityRunnable(final Handler pHandler, final ITask<Params, Progress, Result> pTask, final IResultCallback<Result> pResultCallback) {
+        this(pHandler, pTask, null, null, pResultCallback);
     }
 
     public PriorityRunnable(final Handler pHandler, final ITask<Params, Progress, Result> pTask, final Params pParams, final IProgressCallback<Progress> pProgressCallback, final IResultCallback<Result> pResultCallback) {
@@ -31,33 +36,26 @@ public class PriorityRunnable<Params, Progress, Result> implements Runnable, Com
         mPriority = Thread.MAX_PRIORITY;
     }
 
+    public int getPriority() {
+        return mPriority;
+    }
+
+    public void setPriority(final int pPriority) {
+        mPriority = pPriority;
+    }
+
     @Override
     public void run() {
         try {
-            final Result result = mTask.doInBackground(mParams, new IProgressCallback<Progress>() {
-                @Override
-                public void onProgressUpdate(final Progress pProgress) {
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mProgressCallback.onProgressUpdate(pProgress);
-                        }
-                    });
-                }
-            });
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mResultCallback.onSuccess(result);
-                }
-            });
+            final Result result = mTask.doInBackground(mParams, mTaskProgressCallback);
+
+            if (mHandler != null) {
+                mHandler.post(getHandlerPostResultRunnable(result));
+            }
         } catch (final Exception e) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mResultCallback.onError(e);
-                }
-            });
+            if (mHandler != null) {
+                mHandler.post(getHandlerPostErrorRunnable(e));
+            }
         }
     }
 
@@ -73,5 +71,41 @@ public class PriorityRunnable<Params, Progress, Result> implements Runnable, Com
         } else {
             return 1;
         }
+    }
+
+    private Runnable getHandlerPostProgressRunnable(final Progress pProgress) {
+        return new Runnable() {
+
+            @Override
+            public void run() {
+                if (mProgressCallback != null) {
+                    mProgressCallback.onProgressUpdate(pProgress);
+                }
+            }
+        };
+    }
+
+    private Runnable getHandlerPostResultRunnable(final Result pResult) {
+        return new Runnable() {
+
+            @Override
+            public void run() {
+                if (mResultCallback != null) {
+                    mResultCallback.onSuccess(pResult);
+                }
+            }
+        };
+    }
+
+    private Runnable getHandlerPostErrorRunnable(final Exception pException) {
+        return new Runnable() {
+
+            @Override
+            public void run() {
+                if (mResultCallback != null) {
+                    mResultCallback.onError(pException);
+                }
+            }
+        };
     }
 }

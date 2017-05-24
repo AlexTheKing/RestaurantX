@@ -9,22 +9,37 @@ import com.example.alex.restaurantx.holders.ContextHolder;
 import com.example.alex.restaurantx.imageloader.ImageLoader;
 import com.example.alex.restaurantx.json.JsonHandler;
 
-
 public class CoreApplication extends Application {
 
-    public ApiManager mApiManager;
-    public DatabaseHelper mDatabaseHelper;
-    public ImageLoader mImageLoader;
-    public JsonHandler mJsonHandler;
+    private ApiManager mApiManager;
+    private DatabaseHelper mDatabaseHelper;
+    private ImageLoader mImageLoader;
+    private JsonHandler mJsonHandler;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        ContextHolder contextHolder = ContextHolder.getInstance();
+        final ContextHolder contextHolder = ContextHolder.getInstance();
         contextHolder.setContext(this);
         mApiManager = ApiManager.getInstance();
-        mDatabaseHelper = DatabaseHelper.getInstance(this, Constants.DATABASE_CURRENT_VERSION);
+        mDatabaseHelper = DatabaseHelper.getInstance(this, Constants.DatabaseSettings.DATABASE_CURRENT_VERSION);
         mImageLoader = ImageLoader.getInstance();
         mJsonHandler = JsonHandler.getInstance();
+    }
+
+    public ApiManager getApiManager() {
+        return mApiManager;
+    }
+
+    public DatabaseHelper getDatabaseHelper() {
+        return mDatabaseHelper;
+    }
+
+    public ImageLoader getImageLoader() {
+        return mImageLoader;
+    }
+
+    public JsonHandler getJsonHandler() {
+        return mJsonHandler;
     }
 }
