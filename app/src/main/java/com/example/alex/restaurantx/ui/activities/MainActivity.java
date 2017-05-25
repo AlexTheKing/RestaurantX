@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(final Cursor pCursor) {
-                final CursorDataAdapter<TypeViewHolder> adapter = new CursorDataAdapter<>(pCursor, TypeViewHolder.getCursorHelper(MainActivity.this), R.layout.item_typelist);
+                final CursorDataAdapter<TypeViewHolder> adapter = new CursorDataAdapter<>(pCursor, TypeViewHolder.getCursorBinder(MainActivity.this), R.layout.item_typelist);
 
                 if (adapter.getItemCount() != 0) {
                     final Animation animation = AnimationUtils.loadAnimation(MainActivity.this, R.anim.slider);

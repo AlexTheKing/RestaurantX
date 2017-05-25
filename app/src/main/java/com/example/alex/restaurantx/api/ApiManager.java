@@ -47,8 +47,9 @@ public final class ApiManager {
         }
     }
 
-    public void getRecommendationsMethod(@NonNull final IResultCallback<String> pCallback) {
-
+    public void getRecommendationsMethod(final String pInstanceId, @NonNull final IResultCallback<String> pCallback) {
+        final String recommendationsMethod = String.format(Constants.ApiSettings.LIST_RECOMMENDATIONS, pInstanceId);
+        makeApiRequest(recommendationsMethod, pCallback);
     }
 
     public void addRateMethod(final String pDishName, final String pInstanceId, final int pRate, @Nullable final IResultCallback<String> pCallback) {

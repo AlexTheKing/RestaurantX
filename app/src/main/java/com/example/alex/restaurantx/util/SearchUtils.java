@@ -16,9 +16,14 @@ public final class SearchUtils {
 
     private static final String TAG = "SearchUtils";
 
+    private static MenuItem getActionItem(final Menu menu){
+        return menu.findItem(R.id.action_search);
+    }
+
     public static void setupSearch(final Menu menu, final SearchView.OnQueryTextListener pQueryTextListener) {
-        final MenuItem myActionMenuItem = menu.findItem(R.id.action_search);
-        final SearchView searchView = (SearchView) myActionMenuItem.getActionView();
+        final MenuItem actionItem = getActionItem(menu);
+        actionItem.setVisible(true);
+        final SearchView searchView = (SearchView) actionItem.getActionView();
         final EditText searchEditText = (EditText) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
         searchEditText.setTextColor(Color.WHITE);
         //Uses reflection :c
@@ -33,5 +38,10 @@ public final class SearchUtils {
 
         searchView.setIconifiedByDefault(true);
         searchView.setOnQueryTextListener(pQueryTextListener);
+    }
+
+    public static void hideSearch(final Menu menu){
+        final MenuItem actionItem = getActionItem(menu);
+        actionItem.setVisible(false);
     }
 }

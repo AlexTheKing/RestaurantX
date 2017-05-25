@@ -23,7 +23,7 @@ public final class IngredientViewHolder extends RecyclerView.ViewHolder {
         mSwitch = (SwitchCompat) view.findViewById(R.id.item_settings_ingredient_switch);
     }
 
-    public static IAdapterBinder<IngredientViewHolder, List<String>> getListHelper(final Context pContext) {
+    public static IAdapterBinder<IngredientViewHolder, List<String>> getListBinder(final Context pContext) {
         return new IAdapterBinder<IngredientViewHolder, List<String>>() {
 
             @Override

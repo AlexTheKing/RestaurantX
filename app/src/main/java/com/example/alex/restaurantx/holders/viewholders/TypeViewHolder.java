@@ -28,7 +28,7 @@ public final class TypeViewHolder extends RecyclerView.ViewHolder {
         mName = ((TextView) pView.findViewById(R.id.type_list_item_name));
     }
 
-    public static IAdapterBinder<TypeViewHolder, Cursor> getCursorHelper(final Context pContext) {
+    public static IAdapterBinder<TypeViewHolder, Cursor> getCursorBinder(final Context pContext) {
         return new IAdapterBinder<TypeViewHolder, Cursor>() {
 
             @Override
@@ -44,7 +44,7 @@ public final class TypeViewHolder extends RecyclerView.ViewHolder {
                         final Animation animation = AnimationUtils.loadAnimation(pContext, R.anim.slider);
                         animation.setInterpolator(new AccelerateDecelerateInterpolator());
                         final Intent intent = new Intent(pContext, DishListActivity.class);
-                        intent.putExtra(Constants.INTENT_EXTRA_TYPE, type);
+                        intent.putExtra(Constants.INTENT_EXTRA_DISH_TYPE, type);
                         pContext.startActivity(intent);
                         pHolder.itemView.startAnimation(animation);
                         final Animation.AnimationListener listener = SlidingAnimationUtils.getRedirectAnimationListener(pContext, intent);

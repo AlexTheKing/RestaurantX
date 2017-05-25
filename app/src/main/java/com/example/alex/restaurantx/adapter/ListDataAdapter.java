@@ -7,13 +7,13 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
-public class ListDataAdapter<Holder extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<Holder> {
+public class ListDataAdapter<Holder extends RecyclerView.ViewHolder, Type> extends RecyclerView.Adapter<Holder> {
 
-    private final List<String> mData;
+    private final List<Type> mData;
     private final int mLayout;
-    private final IAdapterBinder<Holder, List<String>> mHelper;
+    private final IAdapterBinder<Holder, List<Type>> mHelper;
 
-    public ListDataAdapter(final List<String> pData, final IAdapterBinder<Holder, List<String>> pHelper, final int pLayout) {
+    public ListDataAdapter(final List<Type> pData, final IAdapterBinder<Holder, List<Type>> pHelper, final int pLayout) {
         mData = pData;
         mLayout = pLayout;
         mHelper = pHelper;

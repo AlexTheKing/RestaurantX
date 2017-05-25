@@ -18,21 +18,30 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.widget.TextView;
 
 import com.example.alex.restaurantx.CoreApplication;
 import com.example.alex.restaurantx.R;
 import com.example.alex.restaurantx.adapter.CursorDataAdapter;
+import com.example.alex.restaurantx.adapter.ListDataAdapter;
+import com.example.alex.restaurantx.api.ApiManager;
 import com.example.alex.restaurantx.callbacks.IResultCallback;
 import com.example.alex.restaurantx.constants.Constants;
 import com.example.alex.restaurantx.database.DatabaseHelper;
 import com.example.alex.restaurantx.database.models.DishModel;
 import com.example.alex.restaurantx.holders.viewholders.DishViewHolder;
+import com.example.alex.restaurantx.json.JsonHandler;
+import com.example.alex.restaurantx.model.Dish;
+import com.example.alex.restaurantx.systems.DataManager;
 import com.example.alex.restaurantx.ui.navigation.NavigationViewListener;
 import com.example.alex.restaurantx.util.DialogHelper;
 import com.example.alex.restaurantx.util.SearchUtils;
 import com.example.alex.restaurantx.util.StringUtils;
+import com.google.android.gms.iid.InstanceID;
+
+import java.util.List;
 
 public class DishListActivity extends AppCompatActivity {
 
@@ -40,6 +49,11 @@ public class DishListActivity extends AppCompatActivity {
     private BroadcastReceiver mReceiver;
     private String mDishType;
     private DialogHelper mDialogHelper;
+    private boolean mIsRecommendations;
+    private ApiManager mApiManager;
+    private JsonHandler mJsonHandler;
+    private DataManager mDataManager;
+    private final String TAG = this.getClass().getCanonicalName();
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
@@ -54,9 +68,20 @@ public class DishListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dish_list);
         mDialogHelper = new DialogHelper(this);
-        mDishType = getIntent().getStringExtra(Constants.INTENT_EXTRA_TYPE);
+        final CoreApplication application = ((CoreApplication) getApplication());
+        mApiManager = application.getApiManager();
+        mJsonHandler = application.getJsonHandler();
+        mDataManager = new DataManager(application.getDatabaseHelper());
+        mDishType = getIntent().getStringExtra(Constants.INTENT_EXTRA_DISH_TYPE);
+        mIsRecommendations = mDishType.equalsIgnoreCase(Constants.INTENT_EXTRA_RECOMMENDATIONS);
         final TextView textView = (TextView) findViewById(R.id.type_dishes_header);
-        textView.setText(mDishType);
+
+        if(mIsRecommendations) {
+            textView.setText(getString(R.string.recommendations));
+        } else {
+            textView.setText(mDishType);
+        }
+
         final Toolbar toolbar = setupToolbar();
         setupNavigationDrawer(toolbar);
         setupRecyclerView();
@@ -66,7 +91,7 @@ public class DishListActivity extends AppCompatActivity {
             @Override
             public void onReceive(final Context pContext, final Intent pIntent) {
                 if (pIntent.getBooleanExtra(Constants.ACTION_UPDATE_BROADCAST, false)) {
-                    upgradeRecyclerView(null);
+                    loadFromDatabaseRecyclerView(null);
                 }
             }
         };
@@ -85,22 +110,26 @@ public class DishListActivity extends AppCompatActivity {
     }
 
     private void setupSearchButton(final Menu menu) {
-        SearchUtils.setupSearch(menu, new SearchView.OnQueryTextListener() {
+        if(mIsRecommendations){
+            SearchUtils.hideSearch(menu);
+        } else {
+            SearchUtils.setupSearch(menu, new SearchView.OnQueryTextListener() {
 
-            @Override
-            public boolean onQueryTextSubmit(final String query) {
-                upgradeRecyclerView(query);
+                @Override
+                public boolean onQueryTextSubmit(final String query) {
+                    loadFromDatabaseRecyclerView(query);
 
-                return true;
-            }
+                    return true;
+                }
 
-            @Override
-            public boolean onQueryTextChange(final String input) {
-                upgradeRecyclerView(input);
+                @Override
+                public boolean onQueryTextChange(final String input) {
+                    loadFromDatabaseRecyclerView(input);
 
-                return true;
-            }
-        });
+                    return true;
+                }
+            });
+        }
     }
 
     private Toolbar setupToolbar() {
@@ -136,10 +165,15 @@ public class DishListActivity extends AppCompatActivity {
         mRecyclerView.setHasFixedSize(true);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
-        upgradeRecyclerView(null);
+
+        if(mIsRecommendations) {
+            loadFromDatabaseRecyclerView(null);
+        } else {
+            loadFromExternalRecyclerView();
+        }
     }
 
-    private void upgradeRecyclerView(final String pTemplateQuery) {
+    private void loadFromDatabaseRecyclerView(final String pTemplateQuery) {
         final String queryTemplate = "%s, %s, %s, %s, %s";
         final String conditionTemplate = "%s = ?";
         final String selectQuery = String.format(
@@ -154,11 +188,12 @@ public class DishListActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(final Cursor pCursor) {
-                mRecyclerView.setAdapter(new CursorDataAdapter<>(pCursor, DishViewHolder.getCursorHelper(DishListActivity.this), R.layout.item_dishlist));
+                mRecyclerView.setAdapter(new CursorDataAdapter<>(pCursor, DishViewHolder.getCursorBinder(DishListActivity.this), R.layout.item_dishlist));
             }
 
             @Override
             public void onError(final Exception e) {
+                Log.e(TAG, "onError: " + e.getMessage(), e);
                 mDialogHelper.showCleanCacheDialog();
             }
         };
@@ -182,5 +217,36 @@ public class DishListActivity extends AppCompatActivity {
                     selectCondition,
                     DatabaseHelper.getSqlStringInterpret(mDishType));
         }
+    }
+
+    private void loadFromExternalRecyclerView(){
+        final String instanceId = InstanceID.getInstance(this).getId();
+        mApiManager.getRecommendationsMethod(instanceId,
+                new IResultCallback<String>() {
+
+                    @Override
+                    public void onSuccess(final String pJsonString) {
+                        mJsonHandler.parseRecommendations(pJsonString, new IResultCallback<List<Dish>>() {
+
+                            @Override
+                            public void onSuccess(final List<Dish> pDishes) {
+                                mDataManager.resaveDishes(pDishes, null);
+                                mRecyclerView.setAdapter(new ListDataAdapter<>(pDishes, DishViewHolder.getListBinder(DishListActivity.this), R.layout.item_dishlist));
+                            }
+
+                            @Override
+                            public void onError(final Exception e) {
+                                Log.e(TAG, "onError: " + e.getMessage(), e);
+                                mDialogHelper.showErrorDialog();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(final Exception e) {
+                        Log.e(TAG, "onError: " + e.getMessage(), e);
+                        mDialogHelper.showNoInternetDialog();
+                    }
+                });
     }
 }

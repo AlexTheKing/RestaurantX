@@ -2,7 +2,8 @@ package com.example.alex.restaurantx.constants;
 
 public interface Constants {
 
-    String INTENT_EXTRA_TYPE = "EXTRA_TYPE";
+    String INTENT_EXTRA_DISH_TYPE = "EXTRA_DISH_TYPE";
+    String INTENT_EXTRA_RECOMMENDATIONS = "EXTRA_RECOMMENDATIONS";
     String INTENT_EXTRA_DISH_NAME = "EXTRA_DISH_NAME";
     String INTENT_EXTRA_HAVE_PROHIBITED = "EXTRA_HAVE_PROHIBITED";
     String INTENT_EXTRA_ACTION_UPDATE = "EXTRA_ACTION_UPDATE";
@@ -19,6 +20,7 @@ public interface Constants {
         String ADD_RATE = "add/rate?dishname=%s&appid=%s&rate=%s";
         String ADD_COMMENT = "add/comment?dishname=%s&appid=%s&comment=%s";
         String LIST_COMMENTS = "list/comments?dishname=%s";
+        String LIST_RECOMMENDATIONS = "list/recommendations?appid=%s";
     }
 
     interface ImageLoaderSettings {
@@ -38,6 +40,7 @@ public interface Constants {
         String RESPONSE = "response";
         String COMMENTS = "comments";
         String TYPES = "types";
+        String RECOMMENDATIONS = "recommendations";
     }
 
     interface DatabaseSettings {

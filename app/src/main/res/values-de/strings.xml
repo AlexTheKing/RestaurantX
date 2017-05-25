@@ -21,4 +21,5 @@
     <string name="settings">Allergische Zutaten</string>
     <string name="updating">Aktualisieren…</string>
     <string name="rating_saved">Die Bewertung ist gespeichert!</string>
+    <string name="recommendations">Recommendations</string>
 </resources>

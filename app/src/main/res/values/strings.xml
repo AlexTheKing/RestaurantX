@@ -30,4 +30,6 @@
     <string name="clean_cache">Error with database occurred, please clean application\'s cache</string>
     <string name="updating">Updating…</string>
     <string name="rating_saved">Rating is saved!</string>
+    <string name="recommendations">Recommendations</string>
+    <string name="error_application">Some error was encountered during work of application</string>
 </resources>

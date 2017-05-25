@@ -114,6 +114,61 @@ public final class JsonHandler {
         }.execute(pJsonString);
     }
 
+    public void parseRecommendations(final String pJsonString, @NotNull final IResultCallback<List<Dish>> pCallback) {
+        new AsyncTask<String, Void, List<Dish>>() {
+
+            @Override
+            protected List<Dish> doInBackground(final String... pJsonStrings) {
+                try {
+                    final List<Dish> menu = new ArrayList<>();
+                    final JSONObject rootObject = new JSONObject(pJsonStrings[0]).getJSONObject(Constants.JsonHandlerSettings.RESPONSE);
+                    final JSONArray jsonArrayRecommendedDishes = rootObject.getJSONArray(Constants.JsonHandlerSettings.RECOMMENDATIONS);
+
+                    for (int dishesIndex = 0; dishesIndex < jsonArrayRecommendedDishes.length(); dishesIndex++) {
+                        final JSONObject jsonDishObject = jsonArrayRecommendedDishes.getJSONObject(dishesIndex);
+                        final String name = jsonDishObject.getString(DishModel.NAME);
+                        final String type = jsonDishObject.getString(DishModel.TYPE);
+                        final float cost = (float) jsonDishObject.getDouble(DishModel.COST);
+                        final String currency = jsonDishObject.getString(DishModel.CURRENCY);
+                        final String weight = jsonDishObject.getString(DishModel.WEIGHT);
+                        final String description = jsonDishObject.getString(DishModel.DESCRIPTION);
+                        final float averageEstimation = (float) jsonDishObject.getDouble(DishModel.AVERAGE_ESTIMATION);
+                        final int userEstimation = Math.round(averageEstimation);
+                        final String bitmapUrl = jsonDishObject.getString(DishModel.BITMAP_URL);
+                        final JSONArray jsonIngredientsArray = jsonDishObject.getJSONArray(DishModel.INGREDIENTS);
+                        final String[] ingredients = new String[jsonIngredientsArray.length()];
+
+                        for (int ingredientIndex = 0; ingredientIndex < jsonIngredientsArray.length(); ingredientIndex++) {
+                            ingredients[ingredientIndex] = jsonIngredientsArray.getString(ingredientIndex);
+                        }
+
+                        final Dish dish = new Dish(name, cost, weight, ingredients);
+                        dish.setType(type);
+                        dish.setCurrency(currency);
+                        dish.setDescription(description);
+                        dish.setBitmapUrl(bitmapUrl);
+                        dish.getVote().setUserEstimation(userEstimation);
+                        dish.getVote().setAverageEstimation(averageEstimation);
+                        menu.add(dish);
+                    }
+
+                    return menu;
+                } catch (final JSONException e) {
+                    pCallback.onError(e);
+
+                    return null;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(final List<Dish> pMenu) {
+                if (pMenu != null) {
+                    pCallback.onSuccess(pMenu);
+                }
+            }
+        }.execute(pJsonString);
+    }
+
     public void parseComments(final String pJsonString, @NotNull final IResultCallback<List<String>> pCallback) {
         new AsyncTask<String, Void, List<String>>() {
 

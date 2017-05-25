@@ -21,10 +21,12 @@ import com.example.alex.restaurantx.adapter.IAdapterBinder;
 import com.example.alex.restaurantx.constants.Constants;
 import com.example.alex.restaurantx.database.DatabaseHelper;
 import com.example.alex.restaurantx.database.models.DishModel;
+import com.example.alex.restaurantx.model.Dish;
 import com.example.alex.restaurantx.ui.activities.DishInfoActivity;
 import com.example.alex.restaurantx.util.SlidingAnimationUtils;
 import com.example.alex.restaurantx.util.StringUtils;
 
+import java.util.List;
 import java.util.Locale;
 
 public final class DishViewHolder extends RecyclerView.ViewHolder {
@@ -45,7 +47,7 @@ public final class DishViewHolder extends RecyclerView.ViewHolder {
         mAverageRating = ((RatingBar) pView.findViewById(R.id.dish_list_item_average_rating));
     }
 
-    public static IAdapterBinder<DishViewHolder, Cursor> getCursorHelper(final Context pContext) {
+    public static IAdapterBinder<DishViewHolder, Cursor> getCursorBinder(final Context pContext) {
         return new IAdapterBinder<DishViewHolder, Cursor>() {
 
             @Override
@@ -82,6 +84,65 @@ public final class DishViewHolder extends RecyclerView.ViewHolder {
                 final String costFormatted = String.format(Locale.US, COST_FORMATTER, pCursor.getFloat(indexCostColumn), currency);
                 pHolder.mCost.setText(costFormatted);
                 pHolder.mAverageRating.setRating(pCursor.getFloat(indexAverageEstimationColumn));
+                final LayerDrawable stars = (LayerDrawable) pHolder.mAverageRating.getProgressDrawable();
+                stars.getDrawable(1).setColorFilter(ContextCompat.getColor(pContext, R.color.colorLightGreen), PorterDuff.Mode.SRC_ATOP);
+                stars.getDrawable(2).setColorFilter(ContextCompat.getColor(pContext, R.color.colorLightGreen), PorterDuff.Mode.SRC_ATOP);
+                final boolean finalHaveProhibited = haveProhibited;
+                pHolder.itemView.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(final View pView) {
+                        final Animation animation = AnimationUtils.loadAnimation(pContext, R.anim.slider);
+                        animation.setInterpolator(new AccelerateDecelerateInterpolator());
+                        final Intent intent = new Intent(pContext, DishInfoActivity.class);
+                        intent.putExtra(Constants.INTENT_EXTRA_DISH_NAME, dishName);
+                        intent.putExtra(Constants.INTENT_EXTRA_HAVE_PROHIBITED, finalHaveProhibited);
+                        final Animation.AnimationListener listener = SlidingAnimationUtils.getRedirectAnimationListener(pContext, intent);
+                        animation.setAnimationListener(listener);
+                        pHolder.itemView.startAnimation(animation);
+                    }
+                });
+            }
+
+            @Override
+            public DishViewHolder onCreateViewHolder(final View view) {
+                return new DishViewHolder(view);
+            }
+        };
+    }
+
+    public static IAdapterBinder<DishViewHolder, List<Dish>> getListBinder(final Context pContext) {
+        return new IAdapterBinder<DishViewHolder, List<Dish>>() {
+
+            @Override
+            public void onBindViewHolder(final List<Dish> pDishes, final DishViewHolder pHolder, final int pPosition) {
+                final Dish dish = pDishes.get(pPosition);
+                final String dishName = dish.getName();
+                final String[] ingredientsAsStr = dish.getIngredients();
+                final SharedPreferences sharedPreferences = pContext.getSharedPreferences(Constants.SETTINGS_FILENAME, Context.MODE_PRIVATE);
+                boolean haveProhibited = false;
+
+                for (final String ingredient : ingredientsAsStr) {
+                    final String capitalized = ingredient.substring(0, 1).toUpperCase() + ingredient.substring(1);
+
+                    if (sharedPreferences.getBoolean(capitalized, false)) {
+                        pHolder.mName.setTextColor(Color.RED);
+                        pHolder.mProhibited.setText(String.format(pContext.getString(R.string.contains), ingredient));
+                        haveProhibited = true;
+
+                        break;
+                    }
+                }
+
+                if (!haveProhibited) {
+                    pHolder.mProhibited.setVisibility(View.GONE);
+                }
+
+                pHolder.mName.setText(dishName);
+                final String currency = dish.getCurrency();
+                final String costFormatted = String.format(Locale.US, COST_FORMATTER, dish.getCost(), currency);
+                pHolder.mCost.setText(costFormatted);
+                pHolder.mAverageRating.setRating(dish.getVote().getAverageEstimation());
                 final LayerDrawable stars = (LayerDrawable) pHolder.mAverageRating.getProgressDrawable();
                 stars.getDrawable(1).setColorFilter(ContextCompat.getColor(pContext, R.color.colorLightGreen), PorterDuff.Mode.SRC_ATOP);
                 stars.getDrawable(2).setColorFilter(ContextCompat.getColor(pContext, R.color.colorLightGreen), PorterDuff.Mode.SRC_ATOP);

@@ -18,10 +18,8 @@ public class DialogHelper {
         builder.setTitle(R.string.problem_occurred);
         builder.setMessage(R.string.checkout_internet);
         builder.setCancelable(true);
-        final AlertDialog dialog = builder.create();
-        dialog.show();
 
-        return dialog;
+        return showDialog(builder);
     }
 
     public AlertDialog showCleanCacheDialog() {
@@ -29,10 +27,8 @@ public class DialogHelper {
         builder.setTitle(R.string.problem_occurred);
         builder.setCancelable(true);
         builder.setMessage(R.string.clean_cache);
-        final AlertDialog dialog = builder.create();
-        dialog.show();
 
-        return dialog;
+        return showDialog(builder);
     }
 
     public AlertDialog showSentButNotSavedRateDialog() {
@@ -40,7 +36,30 @@ public class DialogHelper {
         builder.setTitle(R.string.problem_occurred);
         builder.setCancelable(true);
         builder.setMessage(R.string.problem_but_sent);
-        final AlertDialog dialog = builder.create();
+
+        return showDialog(builder);
+    }
+
+    public AlertDialog showAboutDialog() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setTitle(R.string.about);
+        builder.setMessage(R.string.about_info);
+        builder.setCancelable(true);
+
+        return showDialog(builder);
+    }
+
+    public AlertDialog showErrorDialog() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setTitle(R.string.problem_occurred);
+        builder.setMessage(R.string.error_application);
+        builder.setCancelable(true);
+
+        return showDialog(builder);
+    }
+
+    private AlertDialog showDialog(final AlertDialog.Builder pBuilder){
+        final AlertDialog dialog = pBuilder.create();
         dialog.show();
 
         return dialog;

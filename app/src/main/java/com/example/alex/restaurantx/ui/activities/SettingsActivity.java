@@ -146,7 +146,7 @@ public class SettingsActivity extends AppCompatActivity {
                     }
                 }
 
-                mRecyclerView.setAdapter(new ListDataAdapter<>(allIngredients, IngredientViewHolder.getListHelper(SettingsActivity.this), R.layout.item_settings_ingredient));
+                mRecyclerView.setAdapter(new ListDataAdapter<>(allIngredients, IngredientViewHolder.getListBinder(SettingsActivity.this), R.layout.item_settings_ingredient));
             }
 
             @Override
