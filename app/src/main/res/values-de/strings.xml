@@ -22,4 +22,5 @@
     <string name="updating">Aktualisieren…</string>
     <string name="rating_saved">Die Bewertung ist gespeichert!</string>
     <string name="recommendations">Recommendations</string>
+    <string name="error_application">Bei der Bewerbung ist ein Fehler aufgetreten</string>
 </resources>
