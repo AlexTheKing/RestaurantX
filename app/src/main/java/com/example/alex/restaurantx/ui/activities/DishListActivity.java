@@ -90,7 +90,7 @@ public class DishListActivity extends AppCompatActivity {
 
             @Override
             public void onReceive(final Context pContext, final Intent pIntent) {
-                if (pIntent.getBooleanExtra(Constants.ACTION_UPDATE_BROADCAST, false)) {
+                if (pIntent.getBooleanExtra(Constants.ACTION_UPDATE_BROADCAST, false) && !mIsRecommendations) {
                     loadFromDatabaseRecyclerView(null);
                 }
             }
@@ -166,7 +166,7 @@ public class DishListActivity extends AppCompatActivity {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
 
-        if(mIsRecommendations) {
+        if(!mIsRecommendations) {
             loadFromDatabaseRecyclerView(null);
         } else {
             loadFromExternalRecyclerView();

@@ -45,10 +45,9 @@ public final class TypeViewHolder extends RecyclerView.ViewHolder {
                         animation.setInterpolator(new AccelerateDecelerateInterpolator());
                         final Intent intent = new Intent(pContext, DishListActivity.class);
                         intent.putExtra(Constants.INTENT_EXTRA_DISH_TYPE, type);
-                        pContext.startActivity(intent);
-                        pHolder.itemView.startAnimation(animation);
                         final Animation.AnimationListener listener = SlidingAnimationUtils.getRedirectAnimationListener(pContext, intent);
                         animation.setAnimationListener(listener);
+                        pHolder.itemView.startAnimation(animation);
                     }
                 });
             }

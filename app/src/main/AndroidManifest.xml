@@ -20,15 +20,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.activities.MainActivity"/>
-        <activity
-            android:name=".ui.activities.DishInfoActivity"
-            android:launchMode="singleTask"/>
-        <activity
-            android:name=".ui.activities.DishListActivity"
-            android:launchMode="singleTask"/>
-        <activity
-            android:name=".ui.activities.SettingsActivity"
-            android:launchMode="singleTask"/>
+        <activity android:name=".ui.activities.DishInfoActivity"
+                  android:windowSoftInputMode="stateHidden"/>
+        <activity android:name=".ui.activities.DishListActivity"/>
+        <activity android:name=".ui.activities.SettingsActivity"/>
 
         <service android:name=".service.UpdateService"/>
     </application>
